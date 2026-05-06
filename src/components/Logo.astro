@@ -1,0 +1,239 @@
+---
+interface Props {
+  href?: string;
+  initials?: string;
+  name?: string;
+  em?: string;
+}
+
+const {
+  href = "#top",
+  initials = "AS",
+  name = "Alexander Smith",
+  em = "/ folio",
+} = Astro.props;
+
+const initialsChars = [...initials];
+const nameChars = [...name];
+---
+
+<a class="logo" href={href} aria-label={`${name} — home`} data-logo>
+  <span class="logo__mark" aria-hidden="true" data-logo-mark>
+    <span
+      class="logo__mark-letters logo__mark-letters--rest"
+      data-logo-rest
+    >
+      {initialsChars.map((ch) => <span class="logo__mark-glyph">{ch}</span>)}
+    </span>
+    <span
+      class="logo__mark-letters logo__mark-letters--alt"
+      data-logo-prompt
+    >
+      <span class="logo__mark-glyph">{"❯"}</span>
+      <span class="logo__mark-glyph">{"_"}</span>
+    </span>
+    <span class="logo__mark-dot" data-logo-dot>
+      <span class="logo__mark-ring" data-logo-ring></span>
+    </span>
+  </span>
+  <span class="logo__text" aria-hidden="true">
+    <span class="logo__wordmark" data-logo-wordmark>
+      {
+        nameChars.map((ch) => (
+          <span class="logo__char">{ch === " " ? " " : ch}</span>
+        ))
+      }
+    </span>
+    <span class="logo__em" data-logo-em>{em}</span>
+  </span>
+</a>
+
+<script>
+  import { initLogo } from "~/lib/logo-animation";
+  initLogo();
+</script>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-fg-1);
+    font-family: var(--font-sans);
+    font-weight: var(--w-medium);
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    /* The parent Nav sets pointer-events: none and re-enables it for direct
+       children via a scoped `.nav > *` rule. Astro scopes that selector to
+       the Nav component's cid, so it doesn't reach this Logo (different cid)
+       and the logo would inherit pointer-events: none — making hover dead. */
+    pointer-events: auto;
+    /* JS-off / pre-JS fallback: stay invisible until 1.2s, then fade in over
+       400ms. JS, on mount, cancels this animation and takes over with GSAP. */
+    opacity: 0;
+    animation: logo-fallback-fade 400ms var(--ease-out) 1200ms forwards;
+  }
+
+  @keyframes logo-fallback-fade {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ---------- Mark (initials box + accent dot) ---------- */
+  .logo__mark {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-2);
+    background: var(--color-bg-1);
+    border: 1px solid var(--color-line-2);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  /* Two stacked layers in the same box: --rest shows AS at static state,
+     --alt holds the `> ` prompt that scrolls in on hover. Both share an
+     absolute layout so they occupy the same visual slot. */
+  .logo__mark-letters {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: var(--w-semibold);
+    color: var(--color-fg-1);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .logo__mark-letters--alt {
+    /* Hidden at rest. JS replaces this with a translateY:100% + opacity:0
+       state on mount, then animates into place on hover. */
+    opacity: 0;
+    /* Heavier weight so the chevron has real presence. Default letter-spacing
+       inherited from .logo__mark-letters (matches the AS layer). */
+    font-weight: 700;
+  }
+
+  .logo__mark-glyph {
+    display: inline-block;
+    will-change: transform, opacity;
+  }
+
+  .logo__mark-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 4px;
+    height: 4px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    /* Glow size exposed as a CSS variable so GSAP can tween it during the
+       hover pulse. Default value matches the original static glow. */
+    --glow-size: 6px;
+    box-shadow: 0 0 var(--glow-size) var(--color-accent-glow);
+    transform-origin: center;
+    will-change: transform, box-shadow;
+  }
+
+  /* The ring is a child element (not a pseudo) so we can animate it via class
+     toggling and force-reflow re-trigger on hover replays. */
+  .logo__mark-ring {
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1px solid var(--color-accent);
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.6);
+    transform-origin: center;
+  }
+
+  .logo__mark-ring--firing {
+    animation: logo-ring 480ms var(--ease-out) forwards;
+  }
+
+  @keyframes logo-ring {
+    from {
+      opacity: 0.5;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+
+  /* ---------- Text block ---------- */
+  .logo__text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .logo__wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    overflow: hidden;
+    line-height: 1.2;
+  }
+
+  /* Each split character. inline-block so transforms work; block-context so the
+     wordmark's overflow:hidden clips them on roll. */
+  .logo__char {
+    display: inline-block;
+    will-change: transform, opacity, color;
+    color: var(--color-fg-1);
+  }
+
+  /* Color flash applied via class toggle so theme tokens resolve correctly in
+     both dark and light themes. JS force-reflows before re-adding the class so
+     the animation can re-trigger on hover replays. */
+  .logo__char--flash {
+    animation: logo-char-flash 300ms var(--ease-in-out);
+  }
+
+  @keyframes logo-char-flash {
+    0%,
+    100% {
+      color: var(--color-fg-1);
+    }
+    50% {
+      color: var(--color-accent-hover);
+    }
+  }
+
+  .logo__em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-fg-3);
+    font-weight: var(--w-regular);
+    font-size: 14px;
+    will-change: transform, opacity, color;
+    /* Smooth color transition for the hover state change (fg-3 → accent). */
+    transition: color var(--dur-base) var(--ease-out);
+  }
+
+  /* Hover state for /folio: persistent green while the cursor is over the
+     logo. Toggled on/off by JS in step with the mark transformation. */
+  .logo__em--hover {
+    color: var(--color-accent);
+  }
+
+  /* ---------- Static hover affordance (baseline; works under reduced-motion) ---------- */
+  .logo:hover {
+    color: var(--color-fg-1);
+  }
+
+  /* ---------- Reduced motion: cancel the fallback fade, render immediately ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .logo {
+      opacity: 1;
+      animation: none;
+    }
+  }
+</style>

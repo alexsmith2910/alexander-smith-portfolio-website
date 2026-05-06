@@ -1,0 +1,329 @@
+/* =========================================================================
+   Alexander Smith — Portfolio Design System
+   colors_and_type.css
+   Dark-first foundation. Light tokens are scoped via .theme-light.
+   ========================================================================= */
+
+/* ---------- Webfonts ---------- */
+/* Display + body: Geist (geometric grotesk, modern technical feel) */
+/* Mono: Geist Mono (matches the family, excellent for code) */
+/* Editorial accent: Instrument Serif (occasional italic flourishes) */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+
+:root {
+  /* ---------- COLOR — neutrals (dark-first) ---------- */
+  /* Background ramp — soft charcoal at 50/100 darkness slider */
+  --bg-0: #0b0b0d;          /* page background, deepest */
+  --bg-1: #111114;          /* elevated surface 1 (cards, sections) */
+  --bg-2: #18181c;          /* elevated surface 2 (popovers, hovered cards) */
+  --bg-3: #1f1f24;          /* elevated surface 3 (dialogs) */
+  --bg-inset: #08080a;      /* recessed wells (code blocks, inputs) */
+
+  /* Foreground ramp */
+  --fg-1: #f5f5f4;          /* primary text */
+  --fg-2: #b8b8b3;          /* secondary text, body copy */
+  --fg-3: #7a7a75;          /* tertiary text, captions, meta */
+  --fg-4: #4a4a47;          /* quaternary, disabled, hairline labels */
+
+  /* Hairline borders — keep these subtle, mostly transparent over surfaces */
+  --line-1: rgba(245, 245, 244, 0.08);  /* default border */
+  --line-2: rgba(245, 245, 244, 0.14);  /* hover/active border */
+  --line-3: rgba(245, 245, 244, 0.22);  /* prominent border */
+
+  /* ---------- COLOR — accent (emerald) ---------- */
+  --accent: #10b981;            /* primary accent, CTAs */
+  --accent-hover: #34d399;      /* hover state */
+  --accent-press: #059669;      /* active/pressed */
+  --accent-soft: rgba(16, 185, 129, 0.12);  /* tint for backgrounds */
+  --accent-glow: rgba(16, 185, 129, 0.35);  /* used in shadow/bloom */
+  --accent-fg: #04130d;         /* foreground color when on solid accent */
+
+  /* ---------- COLOR — semantic ---------- */
+  --info:    #38bdf8;
+  --warn:    #f59e0b;
+  --danger:  #ef4444;
+  --success: var(--accent);
+
+  /* ---------- COLOR — syntax (for code blocks) ---------- */
+  --syn-comment:  #6a6a66;
+  --syn-keyword:  #c084fc;   /* purple */
+  --syn-string:   #34d399;   /* emerald */
+  --syn-number:   #fbbf24;   /* amber */
+  --syn-fn:       #60a5fa;   /* blue */
+  --syn-tag:      #f472b6;   /* pink */
+  --syn-attr:     #facc15;
+  --syn-punct:    var(--fg-3);
+
+  /* ---------- TYPE — families ---------- */
+  --font-sans:    'Geist', system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono:    'Geist Mono', ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-serif:   'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+
+  /* ---------- TYPE — weights ---------- */
+  --w-light: 300;
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+
+  /* ---------- TYPE — fluid sizing scale ---------- */
+  /* Designed against a 1440px design width; uses clamp() for fluidity */
+  --t-display:  clamp(56px, 9vw, 144px);   /* hero displays */
+  --t-h1:       clamp(40px, 5.5vw, 80px);  /* page heroes */
+  --t-h2:       clamp(32px, 3.5vw, 56px);  /* section headers */
+  --t-h3:       clamp(24px, 2.2vw, 36px);  /* sub-sections */
+  --t-h4:       20px;                       /* card titles */
+  --t-body-lg:  18px;                       /* lead paragraphs */
+  --t-body:     16px;                       /* default body */
+  --t-body-sm:  14px;                       /* secondary body */
+  --t-caption:  12px;                       /* meta, eyebrows */
+  --t-micro:    11px;                       /* uppercase labels */
+
+  /* ---------- TYPE — line-heights ---------- */
+  --lh-display: 0.95;
+  --lh-tight:   1.05;
+  --lh-snug:    1.2;
+  --lh-normal:  1.5;
+  --lh-loose:   1.7;
+
+  /* ---------- TYPE — letter-spacing ---------- */
+  --ls-display: -0.04em;   /* tight on big display */
+  --ls-h:       -0.02em;   /* tightened headers */
+  --ls-body:    -0.005em;
+  --ls-mono:    0;
+  --ls-eyebrow: 0.16em;    /* uppercase eyebrows widely tracked */
+
+  /* ---------- SPACING — 4pt scale ---------- */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  24px;
+  --sp-6:  32px;
+  --sp-7:  48px;
+  --sp-8:  64px;
+  --sp-9:  96px;
+  --sp-10: 128px;
+  --sp-11: 192px;
+
+  /* ---------- RADII ---------- */
+  /* Sharp language — favored radius is 4px */
+  --r-0:   0px;
+  --r-1:   2px;     /* hairline rounded — chips, fields */
+  --r-2:   4px;     /* default — cards, buttons */
+  --r-3:   8px;     /* dialogs, larger cards */
+  --r-pill: 999px;  /* pills only when intentional */
+
+  /* ---------- SHADOWS / ELEVATION ---------- */
+  /* Dark-mode shadows are subtle — pair with a top-light hairline for definition */
+  --shadow-1: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-2: 0 1px 0 rgba(255,255,255,0.05) inset, 0 6px 18px -6px rgba(0,0,0,0.6);
+  --shadow-3: 0 1px 0 rgba(255,255,255,0.06) inset, 0 24px 48px -16px rgba(0,0,0,0.7);
+  --shadow-glow: 0 0 0 1px var(--accent-glow), 0 12px 40px -8px var(--accent-glow);
+
+  /* ---------- MOTION ---------- */
+  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);   /* expressive ease-out */
+  --ease-in-out:  cubic-bezier(0.65, 0, 0.35, 1);   /* smooth in-out */
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);/* gentle overshoot */
+  --ease-linear:  linear;
+
+  --dur-instant: 80ms;
+  --dur-fast:    160ms;
+  --dur-base:    240ms;
+  --dur-slow:    480ms;
+  --dur-slower:  720ms;
+  --dur-cinema:  1200ms;
+
+  /* ---------- LAYOUT ---------- */
+  --container-max: 1440px;
+  --container-pad-x: clamp(20px, 4vw, 48px);
+  --grid-gutter: 24px;
+  --header-h: 64px;
+
+  /* ---------- DECORATION ---------- */
+  --grid-line: rgba(245, 245, 244, 0.06);  /* blueprint grid lines */
+  --noise-opacity: 0.04;                    /* film grain over backgrounds */
+}
+
+/* ---------- LIGHT THEME OVERRIDES ---------- */
+.theme-light {
+  --bg-0: #f8f7f4;
+  --bg-1: #ffffff;
+  --bg-2: #f1f0ec;
+  --bg-3: #e9e7e2;
+  --bg-inset: #efece6;
+
+  --fg-1: #0b0b0d;
+  --fg-2: #3a3a37;
+  --fg-3: #6a6a65;
+  --fg-4: #9c9c95;
+
+  --line-1: rgba(11, 11, 13, 0.10);
+  --line-2: rgba(11, 11, 13, 0.16);
+  --line-3: rgba(11, 11, 13, 0.24);
+
+  --accent: #059669;
+  --accent-hover: #10b981;
+  --accent-press: #047857;
+  --accent-soft: rgba(5, 150, 105, 0.10);
+  --accent-glow: rgba(5, 150, 105, 0.25);
+  --accent-fg: #ffffff;
+
+  --shadow-1: 0 1px 0 rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px -8px rgba(0,0,0,0.10);
+  --shadow-3: 0 8px 24px -8px rgba(0,0,0,0.12), 0 24px 48px -20px rgba(0,0,0,0.16);
+
+  --grid-line: rgba(11, 11, 13, 0.06);
+}
+
+/* =========================================================================
+   SEMANTIC ELEMENT STYLES
+   Use these directly; element selectors target real HTML.
+   ========================================================================= */
+
+html, body {
+  background: var(--bg-0);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- HEADERS ---------- */
+.t-display, h1.display {
+  font-family: var(--font-sans);
+  font-weight: var(--w-medium);
+  font-size: var(--t-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  text-wrap: balance;
+}
+h1, .t-h1 {
+  font-family: var(--font-sans);
+  font-weight: var(--w-medium);
+  font-size: var(--t-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h);
+  text-wrap: balance;
+}
+h2, .t-h2 {
+  font-family: var(--font-sans);
+  font-weight: var(--w-medium);
+  font-size: var(--t-h2);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h);
+  text-wrap: balance;
+}
+h3, .t-h3 {
+  font-family: var(--font-sans);
+  font-weight: var(--w-medium);
+  font-size: var(--t-h3);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-h);
+}
+h4, .t-h4 {
+  font-family: var(--font-sans);
+  font-weight: var(--w-semibold);
+  font-size: var(--t-h4);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-body);
+}
+
+/* ---------- BODY ---------- */
+p, .t-body {
+  font-size: var(--t-body);
+  line-height: var(--lh-normal);
+  color: var(--fg-2);
+  text-wrap: pretty;
+}
+.t-lead {
+  font-size: var(--t-body-lg);
+  line-height: var(--lh-normal);
+  color: var(--fg-2);
+  text-wrap: pretty;
+}
+.t-small {
+  font-size: var(--t-body-sm);
+  line-height: var(--lh-normal);
+  color: var(--fg-2);
+}
+.t-caption {
+  font-size: var(--t-caption);
+  line-height: var(--lh-normal);
+  color: var(--fg-3);
+}
+
+/* ---------- EYEBROW (uppercase mono label) ---------- */
+.t-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: var(--w-medium);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* ---------- SERIF ACCENT ---------- */
+.t-serif, em.serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- MONO / CODE ---------- */
+code, kbd, samp, .t-mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  font-feature-settings: "ss01", "cv01";
+  letter-spacing: var(--ls-mono);
+}
+:not(pre) > code {
+  background: var(--bg-inset);
+  border: 1px solid var(--line-1);
+  padding: 0.12em 0.4em;
+  border-radius: var(--r-1);
+  color: var(--fg-1);
+}
+pre {
+  background: var(--bg-inset);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-2);
+  padding: var(--sp-5);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-body-sm);
+  line-height: var(--lh-normal);
+  color: var(--fg-1);
+}
+
+/* ---------- LINKS ---------- */
+a {
+  color: var(--fg-1);
+  text-decoration: none;
+  position: relative;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a:hover { color: var(--accent-hover); }
+a.underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+}
+
+/* ---------- HORIZONTAL RULE ---------- */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-1);
+  margin: var(--sp-7) 0;
+}
+
+/* ---------- SELECTION ---------- */
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
+}

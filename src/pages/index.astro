@@ -1,0 +1,198 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import Nav from "~/components/Nav.astro";
+import Hero from "~/components/Hero.astro";
+---
+
+<BaseLayout>
+  <div class="page" data-screen-label="01 Hero">
+    <div class="page__grid"></div>
+
+    <div class="page__bloom" aria-hidden="true">
+      <div class="page__bloom-blob page__bloom-blob--a"></div>
+      <div class="page__bloom-blob page__bloom-blob--b"></div>
+      <div class="page__bloom-blob page__bloom-blob--c"></div>
+    </div>
+
+    <Nav />
+    <Hero />
+
+    <div class="page__grain" aria-hidden="true"></div>
+  </div>
+</BaseLayout>
+
+<script>
+  import "~/lib/interactive-bg";
+</script>
+
+<style>
+  .page {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Blueprint grid backdrop.
+     Bounded vertically so no lines extend past the rail's top border
+     ("the line under my name"). The radial mask creates a soft oval
+     vignette that fades out before reaching any of the four edges.
+     Cursor X/Y from --mx, --my (set by interactive-bg.ts) tilts the
+     plane via perspective + rotateX/Y for a holographic depth feel. */
+  .page__grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 48%,
+      black 0%,
+      black 28%,
+      transparent 82%
+    );
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 48%,
+      black 0%,
+      black 28%,
+      transparent 82%
+    );
+    pointer-events: none;
+    z-index: 0;
+    transform-origin: center;
+    transform: perspective(1400px)
+      rotateX(calc(var(--my, 0) * -5deg))
+      rotateY(calc(var(--mx, 0) * 5deg));
+    will-change: transform;
+  }
+
+  /* Roaming accent bloom — tracks the cursor with a weighted lerp and
+     stretches via axis-aligned scale on the container (no rotation).
+     Inside, three concentric blobs of different sizes and morph cycles
+     drift apart on idle but collapse to the centre when --blob-spread
+     drops (high cursor velocity). The combined effect: stretching
+     container + collapsing blobs reads as a liquid being dragged.
+
+     Container opacity caps the additive screen-blended glow at the same
+     effective brightness as the original static bloom (~0.55) so text
+     stays readable. */
+  .page__bloom {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: clamp(380px, 36vw, 540px);
+    height: clamp(380px, 36vw, 540px);
+    transform: translate3d(
+        calc(var(--bloom-x, 50vw) - 50%),
+        calc(var(--bloom-y, 60vh) - 50%),
+        0
+      )
+      scale(var(--bloom-sx, 1), var(--bloom-sy, 1));
+    transform-origin: center;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(48px);
+    mix-blend-mode: screen;
+    opacity: 0.55;
+    will-change: transform;
+  }
+
+  .page__bloom-blob {
+    position: absolute;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 50% 50%,
+      var(--color-accent-glow),
+      transparent 65%
+    );
+    will-change: transform, border-radius;
+  }
+
+  /* Concentric anchors: each blob centred in the container, with
+     successively smaller sizes. At spread = 0 the keyframe translates
+     are scaled to nothing, so the blobs collapse onto each other.
+     At spread = 1 they drift visibly apart through the keyframe cycle. */
+  .page__bloom-blob--a {
+    inset: 8%;
+    animation: blob-morph 13s var(--ease-in-out) infinite;
+  }
+  .page__bloom-blob--b {
+    inset: 22%;
+    animation: blob-morph 17s var(--ease-in-out) -4s infinite;
+  }
+  .page__bloom-blob--c {
+    inset: 34%;
+    animation: blob-morph 21s var(--ease-in-out) -9s infinite;
+  }
+
+  /* Translate amplitudes are multiplied by --blob-spread so velocity
+     can compress them. Border-radius and scale animate independently
+     of spread so the shape keeps morphing even when collapsed. */
+  @keyframes blob-morph {
+    0% {
+      border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+      transform: translate(0%, 0%) scale(1);
+    }
+    20% {
+      border-radius: 30% 70% 40% 60% / 60% 30% 70% 40%;
+      transform: translate(
+          calc(var(--blob-spread, 1) * 14%),
+          calc(var(--blob-spread, 1) * -10%)
+        )
+        scale(1.08);
+    }
+    40% {
+      border-radius: 50% 50% 60% 40% / 40% 50% 60% 50%;
+      transform: translate(
+          calc(var(--blob-spread, 1) * -12%),
+          calc(var(--blob-spread, 1) * 14%)
+        )
+        scale(0.94);
+    }
+    60% {
+      border-radius: 40% 60% 30% 70% / 70% 40% 50% 60%;
+      transform: translate(
+          calc(var(--blob-spread, 1) * -14%),
+          calc(var(--blob-spread, 1) * -8%)
+        )
+        scale(1.04);
+    }
+    80% {
+      border-radius: 70% 30% 50% 50% / 30% 70% 50% 60%;
+      transform: translate(
+          calc(var(--blob-spread, 1) * 10%),
+          calc(var(--blob-spread, 1) * 12%)
+        )
+        scale(0.96);
+    }
+    100% {
+      border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+      transform: translate(0%, 0%) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page__bloom-blob {
+      animation: none;
+    }
+    .page__grid {
+      transform: none;
+    }
+  }
+
+  /* SVG-encoded film grain — fixed across viewport, blends over content */
+  .page__grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    z-index: 100;
+  }
+</style>

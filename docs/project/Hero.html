@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alexander Smith — Developer & interface designer</title>
+  <link rel="stylesheet" href="colors_and_type.css" />
+  <link rel="stylesheet" href="hero.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg" />
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel">
+    const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "showPhoto": false,
+      "accent": "#10b981",
+      "tagline": "Full-Stack Developer & Web Designer",
+      "firstName": "Alexander",
+      "lastName": "Smith",
+      "midChip": "Currently building WatchDeck",
+      "location": "Dubai, UAE",
+      "available": "Available June 2026",
+      "showStrokeLast": false
+    }/*EDITMODE-END*/;
+
+    const Page = () => {
+      const [t, setTweak] = useTweaks(TWEAKS_DEFAULTS);
+
+      React.useEffect(() => {
+        document.documentElement.style.setProperty('--accent', t.accent);
+        document.documentElement.style.setProperty('--accent-glow',
+          t.accent + '59'); // ~35% alpha
+        document.documentElement.style.setProperty('--accent-soft',
+          t.accent + '1f');
+      }, [t.accent]);
+
+      return (
+        <div className={`page ${t.showPhoto ? 'has-photo' : ''}`} data-screen-label="01 Hero">
+          <div className="page__grid" />
+          <div className="page__bloom" />
+
+          {/* Nav */}
+          <header className="nav fade-up">
+            <a href="#top" className="nav__brand" aria-label="Alexander Smith — home">
+              <span className="nav__brand-mark">AS</span>
+              <span className="nav__brand-text">
+                Alexander Smith
+                <span className="nav__brand-em">/ folio</span>
+              </span>
+            </a>
+
+            <nav className="nav__pill" aria-label="Primary">
+              <a href="#work">Work</a>
+              <a href="#writing">Writing</a>
+              <span className="nav__pill-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </span>
+              <a href="#workshop">Workshop</a>
+              <a href="#about">About</a>
+            </nav>
+
+            <div className="nav__right">
+              <a href="mailto:hello@alexsmith.dev">Email</a>
+              <a href="#" className="is-icon" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.27-5.24-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.46.11-3.04 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.38.97 0 1.95.13 2.86.38 2.18-1.49 3.14-1.18 3.14-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.36-5.25 5.65.41.36.78 1.05.78 2.12v3.14c0 .31.21.67.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+              </a>
+              <a href="#" className="is-icon" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22V8zm7.55 0h4.37v1.92h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.48 3.04 5.48 7v7.44h-4.56v-6.59c0-1.57-.03-3.59-2.18-3.59-2.19 0-2.52 1.71-2.52 3.48V22H7.77V8z"/></svg>
+              </a>
+              <a href="#" className="is-icon" aria-label="X">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z"/></svg>
+              </a>
+              <a href="#contact">{t.available}</a>
+            </div>
+          </header>
+
+          {/* Stage */}
+          <main className="stage">
+            <div className="stage__tag fade-up delay-1">
+              <div className="stage__eyebrow">
+                <span className="stage__eyebrow-num">01</span>
+                <span className="stage__eyebrow-line" />
+                <span>Folio · 2026</span>
+              </div>
+              <div className="stage__role">
+                {t.tagline.split('&').map((part, i, arr) => (
+                  <React.Fragment key={i}>
+                    {part}
+                    {i < arr.length - 1 && <em>&amp;</em>}
+                  </React.Fragment>
+                ))}
+              </div>
+              <div className="stage__role-sub">
+                I work at the seam of design and engineering — turning considered
+                ideas into smooth, surprising interfaces.
+              </div>
+            </div>
+
+            <div className="stage__meta fade-up delay-2">
+              <div className="stage__meta-row"><span>Based</span><span>{t.location}</span></div>
+              <div className="stage__meta-row"><span>Stack</span><span>Astro · GSAP · Lenis</span></div>
+              <div className="stage__meta-row"><span>Status</span><span>{t.available}</span></div>
+            </div>
+
+            <div className="stage__photo" aria-hidden="true" />
+
+            <div className="stage__name-wrap">
+              <div className="stage__name-meta fade-up delay-3">
+                <div className="stage__live">
+                  <span className="stage__live-dot" />
+                  <span>Currently building · {t.location}</span>
+                </div>
+                <span className="stage__chip" aria-hidden="true">
+                  <span className="stage__chip-bullet" />
+                  {t.midChip}
+                  <svg className="stage__chip-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+                </span>
+              </div>
+              <h1 className="stage__name" aria-label={`${t.firstName} ${t.lastName}`}>
+                <span className="stage__name-row">
+                  <span className="stage__name-glyph">{t.firstName}</span>
+                </span>
+                <span className="stage__name-row stage__name-row--right">
+                  {t.showStrokeLast
+                    ? <span className="stage__name-stroke">{t.lastName}</span>
+                    : <span className="stage__name-glyph">{t.lastName}</span>}
+                </span>
+              </h1>
+            </div>
+
+            <div className="rail fade-up delay-4">
+              <div className="rail__group">
+                <span>Index</span>
+                <span>01 / 04 — Hero</span>
+              </div>
+              <div className="rail__group">
+                <span>Latest</span>
+                <span>WatchDeck — case study</span>
+              </div>
+              <div className="rail__scroll">
+                <span>Scroll to explore</span>
+                <span className="rail__scroll-arrow">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+                </span>
+              </div>
+            </div>
+          </main>
+
+          <div className="page__grain" aria-hidden="true" />
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection title="Layout">
+              <TweakToggle
+                label="Show portrait slot"
+                value={t.showPhoto}
+                onChange={(v) => setTweak('showPhoto', v)}
+                hint="Reveals a centered photo slot under the wordmark"
+              />
+              <TweakToggle
+                label="Outline last name"
+                value={t.showStrokeLast}
+                onChange={(v) => setTweak('showStrokeLast', v)}
+              />
+            </TweakSection>
+            <TweakSection title="Color">
+              <TweakColor
+                label="Accent"
+                value={t.accent}
+                onChange={(v) => setTweak('accent', v)}
+                options={['#10b981', '#f59e0b', '#60a5fa', '#f472b6']}
+              />
+            </TweakSection>
+            <TweakSection title="Copy">
+              <TweakText label="First name" value={t.firstName} onChange={(v) => setTweak('firstName', v)} />
+              <TweakText label="Last name" value={t.lastName} onChange={(v) => setTweak('lastName', v)} />
+              <TweakText label="Tagline" value={t.tagline} onChange={(v) => setTweak('tagline', v)} hint="Use & for serif italic ampersand" />
+              <TweakText label="Mid chip" value={t.midChip} onChange={(v) => setTweak('midChip', v)} />
+              <TweakText label="Location" value={t.location} onChange={(v) => setTweak('location', v)} />
+              <TweakText label="Availability" value={t.available} onChange={(v) => setTweak('available', v)} />
+            </TweakSection>
+          </TweaksPanel>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+  </script>
+
+  <style id="__om-edit-overrides"></style>
+</body>
+</html>

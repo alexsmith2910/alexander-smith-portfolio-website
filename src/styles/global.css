@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "@fontsource/instrument-serif/400-italic.css";
+
+/* =========================================================================
+   Design tokens — Tailwind v4 @theme
+   Tokens with namespace prefixes generate matching utility classes
+   (e.g. --color-bg-0 → bg-bg-0, --font-sans → font-sans, --text-display
+   → text-display). They are also emitted as CSS variables in :root so
+   they remain accessible via var() in plain CSS.
+   ========================================================================= */
+@theme {
+  /* ---------- COLOR — neutrals (dark-first) ---------- */
+  --color-bg-0: #0b0b0d;
+  --color-bg-1: #111114;
+  --color-bg-2: #18181c;
+  --color-bg-3: #1f1f24;
+  --color-bg-inset: #08080a;
+
+  --color-fg-1: #f5f5f4;
+  --color-fg-2: #b8b8b3;
+  --color-fg-3: #7a7a75;
+  --color-fg-4: #4a4a47;
+
+  --color-line-1: rgba(245, 245, 244, 0.08);
+  --color-line-2: rgba(245, 245, 244, 0.14);
+  --color-line-3: rgba(245, 245, 244, 0.22);
+
+  /* ---------- COLOR — accent (emerald) ---------- */
+  --color-accent: #10b981;
+  --color-accent-hover: #34d399;
+  --color-accent-press: #059669;
+  --color-accent-soft: rgba(16, 185, 129, 0.12);
+  --color-accent-glow: rgba(16, 185, 129, 0.35);
+  --color-accent-fg: #04130d;
+
+  /* ---------- COLOR — semantic ---------- */
+  --color-info: #38bdf8;
+  --color-warn: #f59e0b;
+  --color-danger: #ef4444;
+  --color-success: #10b981;
+
+  /* ---------- TYPE — families ---------- */
+  --font-sans: "Geist Variable", system-ui, -apple-system, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "JetBrains Mono",
+    "SF Mono", Menlo, Consolas, monospace;
+  --font-serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+
+  /* ---------- TYPE — fluid sizing scale ---------- */
+  --text-display: clamp(56px, 9vw, 144px);
+  --text-h1: clamp(40px, 5.5vw, 80px);
+  --text-h2: clamp(32px, 3.5vw, 56px);
+  --text-h3: clamp(24px, 2.2vw, 36px);
+  --text-h4: 20px;
+  --text-body-lg: 18px;
+  --text-body: 16px;
+  --text-body-sm: 14px;
+  --text-caption: 12px;
+  --text-micro: 11px;
+
+  /* ---------- RADII (sharp language; favored is 4px) ---------- */
+  --radius-0: 0px;
+  --radius-1: 2px;
+  --radius-2: 4px;
+  --radius-3: 8px;
+  --radius-pill: 999px;
+
+  /* ---------- SHADOWS / ELEVATION ---------- */
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 6px 18px -6px rgba(0, 0, 0, 0.6);
+  --shadow-3: 0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 24px 48px -16px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 0 1px var(--color-accent-glow),
+    0 12px 40px -8px var(--color-accent-glow);
+
+  /* ---------- MOTION easings ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* =========================================================================
+   Plain CSS variables — accessed via var() in component CSS.
+   Not promoted to Tailwind utilities by design (utility-shaped versions of
+   spacing/duration/letter-spacing aren't worth the namespace pollution).
+   ========================================================================= */
+:root {
+  /* font weights */
+  --w-light: 300;
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+
+  /* line-heights */
+  --lh-display: 0.95;
+  --lh-tight: 1.05;
+  --lh-snug: 1.2;
+  --lh-normal: 1.5;
+  --lh-loose: 1.7;
+
+  /* letter-spacing */
+  --ls-display: -0.04em;
+  --ls-h: -0.02em;
+  --ls-body: -0.005em;
+  --ls-mono: 0;
+  --ls-eyebrow: 0.16em;
+
+  /* spacing (4pt scale) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 128px;
+  --sp-11: 192px;
+
+  /* durations */
+  --dur-instant: 80ms;
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 480ms;
+  --dur-slower: 720ms;
+  --dur-cinema: 1200ms;
+
+  /* layout */
+  --container-max: 1440px;
+  --container-pad-x: clamp(20px, 4vw, 48px);
+  --grid-gutter: 24px;
+  --header-h: 64px;
+
+  /* decoration */
+  --grid-line: rgba(245, 245, 244, 0.06);
+  --noise-opacity: 0.04;
+}
+
+/* =========================================================================
+   LIGHT THEME OVERRIDES
+   Toggle by adding .theme-light to <html> or <body>.
+   ========================================================================= */
+.theme-light {
+  --color-bg-0: #f8f7f4;
+  --color-bg-1: #ffffff;
+  --color-bg-2: #f1f0ec;
+  --color-bg-3: #e9e7e2;
+  --color-bg-inset: #efece6;
+
+  --color-fg-1: #0b0b0d;
+  --color-fg-2: #3a3a37;
+  --color-fg-3: #6a6a65;
+  --color-fg-4: #9c9c95;
+
+  --color-line-1: rgba(11, 11, 13, 0.10);
+  --color-line-2: rgba(11, 11, 13, 0.16);
+  --color-line-3: rgba(11, 11, 13, 0.24);
+
+  --color-accent: #059669;
+  --color-accent-hover: #10b981;
+  --color-accent-press: #047857;
+  --color-accent-soft: rgba(5, 150, 105, 0.10);
+  --color-accent-glow: rgba(5, 150, 105, 0.25);
+  --color-accent-fg: #ffffff;
+
+  --shadow-1: 0 1px 0 rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-2: 0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 24px -8px rgba(0, 0, 0, 0.10);
+  --shadow-3: 0 8px 24px -8px rgba(0, 0, 0, 0.12),
+    0 24px 48px -20px rgba(0, 0, 0, 0.16);
+
+  --grid-line: rgba(11, 11, 13, 0.06);
+}
+
+/* =========================================================================
+   BASE / RESET
+   ========================================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--color-bg-0);
+  color: var(--color-fg-1);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--ls-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+}
+
+/* Reduced motion — global escape hatch.
+   Component-level animations should also self-disable under this query;
+   this rule is a defensive backstop for anything that slips through. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
