@@ -80,16 +80,21 @@ function bindLogo(el: HTMLAnchorElement): void {
   const dotWink = buildDotWinkTimeline(dot);
   const dotPulse = buildDotPulseTimeline(dot);
 
-  document.fonts.ready.then(() => appear.play());
-
   // Hover splits into multiple pieces. mark (AS↔❯_) is play/reverse via the
   // hover timeline. wordmark roll is a one-shot flourish (restart). dot wink
-  // is play/reverse on its own timeline. /folio uses asymmetric tweens: bounce
-  // on enter, smooth on leave (timeline reverse can't give different easing
-  // per direction, and a bounce on the way back risks colliding with "Smith").
+  // is play/reverse on its own timeline. /folio is CSS-only and not driven
+  // from here — it reacts to :hover/:focus-visible directly.
+  //
+  // Hover handlers are gated behind appearComplete: if the cursor is already
+  // over the logo when the page loads, the hover timelines would tween the
+  // same chars/glyphs the appear timeline is animating, leaving them stuck
+  // at intermediate positions. We hold hover off until appear finishes, then
+  // re-fire enter() if the cursor is still over the logo at that moment.
+  let appearComplete = false;
   let dotScaleResetTween: gsap.core.Tween | null = null;
   let pulseTimer: ReturnType<typeof setTimeout> | null = null;
   const enter = () => {
+    if (!appearComplete) return;
     if (dotScaleResetTween) {
       dotScaleResetTween.kill();
       dotScaleResetTween = null;
@@ -106,6 +111,7 @@ function bindLogo(el: HTMLAnchorElement): void {
     pulseTimer = setTimeout(() => dotPulse.play(0), 600);
   };
   const leave = () => {
+    if (!appearComplete) return;
     if (pulseTimer) {
       clearTimeout(pulseTimer);
       pulseTimer = null;
@@ -123,6 +129,15 @@ function bindLogo(el: HTMLAnchorElement): void {
       ease: "power2.out",
     });
   };
+
+  appear.eventCallback("onComplete", () => {
+    appearComplete = true;
+    if (el.matches(":hover") || document.activeElement === el) {
+      enter();
+    }
+  });
+
+  document.fonts.ready.then(() => appear.play());
 
   el.addEventListener("mouseenter", enter);
   el.addEventListener("mouseleave", leave);
