@@ -291,11 +291,28 @@ const nameChars = [...name];
     color: var(--color-fg-1);
   }
 
-  /* ---------- Reduced motion: cancel the fallback fade, render immediately ---------- */
+  /* ---------- Reduced motion: cancel the fallback fade, render immediately;
+     swap the /folio wipe for a flat opacity crossfade and hide the caret ---------- */
   @media (prefers-reduced-motion: reduce) {
     .logo {
       opacity: 1;
       animation: none;
+    }
+
+    .logo__em-caret {
+      display: none;
+    }
+
+    .logo__em-reveal {
+      clip-path: inset(0 0 0 0);
+      opacity: 0;
+      transition: opacity 80ms linear;
+    }
+
+    .logo:hover .logo__em-reveal,
+    .logo:focus-visible .logo__em-reveal {
+      opacity: 1;
+      transition-delay: 0ms;
     }
   }
 </style>
