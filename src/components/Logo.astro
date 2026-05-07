@@ -258,22 +258,23 @@ const nameChars = [...name];
   }
 
   /* Hover / keyboard-focus drives the wipe + caret. The transition-delay
-     override (800ms only on enter; 0ms on leave) holds the wipe back until
-     after the AS↔❯_ box transition (~560ms) and the wordmark roll (~770ms)
-     have finished — /folio is the final beat in the orchestration. */
+     override (350ms only on enter; 0ms on leave) starts the wipe just as
+     the wordmark's last char begins its roll (wordmark t=0.1 + 14*0.018 =
+     0.352s for "Alexander Smith"), so /folio types in alongside the tail
+     of the cascade rather than after it. */
   .logo:hover .logo__em-reveal,
   .logo:focus-visible .logo__em-reveal {
     clip-path: inset(0 0 0 0);
-    transition-delay: 800ms;
+    transition-delay: 350ms;
   }
 
   .logo:hover .logo__em-caret,
   .logo:focus-visible .logo__em-caret {
     left: calc(100% + 2px);
     opacity: 1;
-    transition-delay: 800ms;
-    /* Blink begins after the 800ms stagger + 420ms travel = 1220ms. */
-    animation: logo-em-caret-blink 700ms infinite 1220ms;
+    transition-delay: 350ms;
+    /* Blink begins after the 350ms stagger + 420ms travel = 770ms. */
+    animation: logo-em-caret-blink 700ms infinite 770ms;
   }
 
   @keyframes logo-em-caret-blink {
