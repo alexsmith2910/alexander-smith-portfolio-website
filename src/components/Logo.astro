@@ -306,7 +306,9 @@ const nameChars = [...name];
     .logo__em-reveal {
       clip-path: inset(0 0 0 0);
       opacity: 0;
-      transition: opacity 80ms linear;
+      /* transition is overridden by global.css's reduced-motion rule
+         (transition-duration: 0.01ms !important) — opacity flips instantly,
+         which is the correct reduced-motion outcome. */
     }
 
     .logo:hover .logo__em-reveal,
