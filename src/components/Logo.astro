@@ -258,21 +258,22 @@ const nameChars = [...name];
   }
 
   /* Hover / keyboard-focus drives the wipe + caret. The transition-delay
-     override (150ms only on enter; 0ms on leave) staggers the wipe so the
-     AS↔❯_ box transition starts visibly first. */
+     override (800ms only on enter; 0ms on leave) holds the wipe back until
+     after the AS↔❯_ box transition (~560ms) and the wordmark roll (~770ms)
+     have finished — /folio is the final beat in the orchestration. */
   .logo:hover .logo__em-reveal,
   .logo:focus-visible .logo__em-reveal {
     clip-path: inset(0 0 0 0);
-    transition-delay: 150ms;
+    transition-delay: 800ms;
   }
 
   .logo:hover .logo__em-caret,
   .logo:focus-visible .logo__em-caret {
     left: calc(100% + 2px);
     opacity: 1;
-    transition-delay: 150ms;
-    /* Blink begins after the 150ms stagger + 420ms travel = 570ms. */
-    animation: logo-em-caret-blink 700ms infinite 570ms;
+    transition-delay: 800ms;
+    /* Blink begins after the 800ms stagger + 420ms travel = 1220ms. */
+    animation: logo-em-caret-blink 700ms infinite 1220ms;
   }
 
   @keyframes logo-em-caret-blink {
