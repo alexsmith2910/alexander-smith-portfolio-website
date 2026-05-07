@@ -242,7 +242,7 @@ const nameChars = [...name];
 
   /* Vertical 1px caret. Sits at the left edge invisible at rest; on hover
      fades in and travels to past-the-right-edge in sync with the reveal,
-     then loops a steps(2) blink. */
+     then loops a binary blink driven by the 50%/50.01% keyframe boundary. */
   .logo__em-caret {
     position: absolute;
     left: -2px;
@@ -272,7 +272,7 @@ const nameChars = [...name];
     opacity: 1;
     transition-delay: 150ms;
     /* Blink begins after the 150ms stagger + 420ms travel = 570ms. */
-    animation: logo-em-caret-blink 700ms steps(2) infinite 570ms;
+    animation: logo-em-caret-blink 700ms infinite 570ms;
   }
 
   @keyframes logo-em-caret-blink {
