@@ -257,6 +257,35 @@ const nameChars = [...name];
     pointer-events: none;
   }
 
+  /* Hover / keyboard-focus drives the wipe + caret. The transition-delay
+     override (150ms only on enter; 0ms on leave) staggers the wipe so the
+     AS↔❯_ box transition starts visibly first. */
+  .logo:hover .logo__em-reveal,
+  .logo:focus-visible .logo__em-reveal {
+    clip-path: inset(0 0 0 0);
+    transition-delay: 150ms;
+  }
+
+  .logo:hover .logo__em-caret,
+  .logo:focus-visible .logo__em-caret {
+    left: calc(100% + 2px);
+    opacity: 1;
+    transition-delay: 150ms;
+    /* Blink begins after the 150ms stagger + 420ms travel = 570ms. */
+    animation: logo-em-caret-blink 700ms steps(2) infinite 570ms;
+  }
+
+  @keyframes logo-em-caret-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
   /* Hover state for /folio: persistent green while the cursor is over the
      logo. Toggled on/off by JS in step with the mark transformation. */
   .logo__em--hover {
