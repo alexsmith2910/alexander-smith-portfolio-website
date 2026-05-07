@@ -33,3 +33,4 @@ Thumbs.db
 # tooling
 .claude/
 .playwright-mcp/
+.superpowers/
