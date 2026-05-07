@@ -100,16 +100,7 @@ function bindLogo(el: HTMLAnchorElement): void {
     }
     hover.play();
     wordmarkFlourish.restart();
-    emEl.classList.add("logo__em--hover");
     dotWink.play();
-    // /folio slides right with a bounce. overwrite: "auto" kills any pending
-    // leave tween so rapid hover-toggles don't compound.
-    gsap.to(emEl, {
-      x: 20,
-      duration: 0.4,
-      ease: "back.out(1.4)",
-      overwrite: "auto",
-    });
     // Wait for the wink (~580ms) before starting the pulse so the dot's
     // x/y/opacity changes don't fight the pulse's scale/glow tweens.
     pulseTimer = setTimeout(() => dotPulse.play(0), 600);
@@ -120,18 +111,9 @@ function bindLogo(el: HTMLAnchorElement): void {
       pulseTimer = null;
     }
     hover.reverse();
-    emEl.classList.remove("logo__em--hover");
     dotPulse.pause();
     // Wink reverses: slides off right, snaps above, rolls down to corner.
     dotWink.reverse();
-    // /folio glides smoothly back to rest — no bounce on the return so it
-    // doesn't risk crossing over into "Smith".
-    gsap.to(emEl, {
-      x: 0,
-      duration: 0.34,
-      ease: "power2.out",
-      overwrite: "auto",
-    });
     // Scale/glow were left at intermediate values by the paused pulse — tween
     // them back to rest in parallel with the wink reverse.
     dotScaleResetTween = gsap.to(dot, {
