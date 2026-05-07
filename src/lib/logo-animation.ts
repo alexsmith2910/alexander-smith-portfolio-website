@@ -199,12 +199,10 @@ interface HoverArgs {
  *   - `>_` prompt rolls in from below
  *   - Accent dot drifts straight down (Y only, delayed so it doesn't pass
  *     through the AS letters during their exit)
- *   - /folio nudges right (color shift handled by CSS class toggle elsewhere)
  */
 function buildHoverTimeline(args: HoverArgs): gsap.core.Timeline {
   const { restGlyphs, altGlyphs } = args;
-  // dot and emEl are handled outside the timeline (separate forward/reverse
-  // tweens) so they can have asymmetric easing — see enter/leave handlers.
+  // dot is handled outside the timeline — see enter/leave handlers.
 
   const tl = gsap.timeline({ paused: true });
 
