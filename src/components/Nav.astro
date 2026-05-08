@@ -301,6 +301,38 @@ const navLinksRight = [
     transform: scale(1);
   }
 
+  /* ---------- Per-character text flourish ---------- */
+  .nav__roll {
+    display: inline-flex;
+    overflow: hidden;
+    line-height: 1.2;
+  }
+  .nav__char {
+    display: inline-block;
+    will-change: transform, color;
+  }
+  a[data-nav-link].replay .nav__char {
+    animation: nav-char-roll 460ms var(--ease-out) forwards;
+  }
+
+  @keyframes nav-char-roll {
+    0% {
+      transform: translateY(0);
+      color: var(--color-fg-2);
+    }
+    32% {
+      transform: translateY(-100%);
+      color: var(--color-accent);
+    }
+    32.01% {
+      transform: translateY(110%);
+    }
+    100% {
+      transform: translateY(0);
+      color: var(--color-fg-1);
+    }
+  }
+
   /* ---------- Responsive ---------- */
   @media (max-width: 900px) {
     .nav {
@@ -332,7 +364,42 @@ const navLinksRight = [
     );
     if (!bg || links.length === 0) return;
 
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
     let currentTarget: HTMLAnchorElement | null = null;
+    let pendingRollTimer: number | null = null;
+
+    const cancelPendingRoll = (): void => {
+      if (pendingRollTimer !== null) {
+        window.clearTimeout(pendingRollTimer);
+        pendingRollTimer = null;
+      }
+    };
+
+    const flourish = (link: HTMLAnchorElement): void => {
+      const chars = Array.from(
+        link.querySelectorAll<HTMLElement>(".nav__char"),
+      );
+      if (chars.length === 0) return; // icon-only links — nothing to roll
+
+      // Stagger cap: short labels keep 22 ms/char (matches the logo wordmark).
+      // Long labels compress to keep total stagger ≤ ~264 ms.
+      const staggerMs = Math.min(22, Math.floor(264 / chars.length));
+      chars.forEach((char, i) => {
+        char.style.animationDelay = `${i * staggerMs}ms`;
+      });
+
+      link.classList.remove("replay");
+      // Force reflow so re-adding `replay` retriggers the animation.
+      void link.offsetWidth;
+      link.classList.add("replay");
+
+      // Remove the class once the full roll completes.
+      const totalMs = chars.length * staggerMs + 460;
+      window.setTimeout(() => link.classList.remove("replay"), totalMs);
+    };
 
     const moveTo = (link: HTMLAnchorElement): void => {
       const r = link.getBoundingClientRect();
@@ -342,11 +409,9 @@ const navLinksRight = [
 
       const justAppearing = !bg.classList.contains("is-visible");
       if (justAppearing) {
-        // Snap to position with transitions disabled, then fade in.
         bg.style.transition = "none";
         bg.style.left = `${left}px`;
         bg.style.width = `${width}px`;
-        // Force reflow so the snap takes effect before re-enabling transitions.
         void bg.offsetWidth;
         bg.style.transition = "";
         bg.classList.add("is-visible");
@@ -355,11 +420,19 @@ const navLinksRight = [
         bg.style.width = `${width}px`;
       }
       currentTarget = link;
+
+      cancelPendingRoll();
+      if (!reduceMotion) {
+        pendingRollTimer = window.setTimeout(() => {
+          if (currentTarget === link) flourish(link);
+        }, 50);
+      }
     };
 
     const hide = (): void => {
       bg.classList.remove("is-visible");
       bg.classList.remove("is-pressing");
+      cancelPendingRoll();
       currentTarget = null;
     };
 
