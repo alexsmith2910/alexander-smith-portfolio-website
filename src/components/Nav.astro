@@ -370,6 +370,7 @@ const navLinksRight = [
 
     let currentTarget: HTMLAnchorElement | null = null;
     let pendingRollTimer: number | null = null;
+    const replayClearTimers = new Map<HTMLAnchorElement, number>();
 
     const cancelPendingRoll = (): void => {
       if (pendingRollTimer !== null) {
@@ -396,9 +397,20 @@ const navLinksRight = [
       void link.offsetWidth;
       link.classList.add("replay");
 
-      // Remove the class once the full roll completes.
+      // Cancel any in-flight cleanup timer from a previous flourish on this
+      // same link so it can't yank the `.replay` class out from under the new
+      // animation.
+      const stale = replayClearTimers.get(link);
+      if (stale !== undefined) window.clearTimeout(stale);
+
+      // Remove the class once the full roll completes, and remember the timer
+      // so we can cancel it if a fresh flourish lands first.
       const totalMs = chars.length * staggerMs + 460;
-      window.setTimeout(() => link.classList.remove("replay"), totalMs);
+      const timerId = window.setTimeout(() => {
+        link.classList.remove("replay");
+        replayClearTimers.delete(link);
+      }, totalMs);
+      replayClearTimers.set(link, timerId);
     };
 
     const moveTo = (link: HTMLAnchorElement): void => {
@@ -433,6 +445,8 @@ const navLinksRight = [
       bg.classList.remove("is-visible");
       bg.classList.remove("is-pressing");
       cancelPendingRoll();
+      replayClearTimers.forEach((id) => window.clearTimeout(id));
+      replayClearTimers.clear();
       currentTarget = null;
     };
 
