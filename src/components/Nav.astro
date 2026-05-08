@@ -158,6 +158,7 @@ const navLinksRight = [
     border: 1px solid var(--color-line-1);
     border-radius: var(--radius-pill);
     box-shadow: var(--shadow-1);
+    position: relative;
   }
   .nav__pill a {
     display: inline-flex;
@@ -170,13 +171,13 @@ const navLinksRight = [
     border-radius: var(--radius-pill);
     letter-spacing: -0.005em;
     text-decoration: none;
-    transition:
-      color var(--dur-fast) var(--ease-out),
-      background var(--dur-fast) var(--ease-out);
+    position: relative;
+    z-index: 1;
+    transition: color var(--dur-fast) var(--ease-out);
   }
-  .nav__pill a:hover {
+  .nav__pill a:hover,
+  .nav__pill a:focus-visible {
     color: var(--color-fg-1);
-    background: var(--color-line-1);
   }
   .nav__pill-mark {
     width: 28px;
@@ -216,6 +217,7 @@ const navLinksRight = [
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--color-line-1);
     border-radius: var(--radius-pill);
+    position: relative;
   }
   .nav__right a {
     display: inline-flex;
@@ -227,13 +229,13 @@ const navLinksRight = [
     font-weight: var(--w-medium);
     border-radius: var(--radius-pill);
     text-decoration: none;
-    transition:
-      color var(--dur-fast) var(--ease-out),
-      background var(--dur-fast) var(--ease-out);
+    position: relative;
+    z-index: 1;
+    transition: color var(--dur-fast) var(--ease-out);
   }
-  .nav__right a:hover {
+  .nav__right a:hover,
+  .nav__right a:focus-visible {
     color: var(--color-fg-1);
-    background: var(--color-line-1);
   }
   .nav__right a.is-icon {
     padding: 8px;
@@ -246,10 +248,57 @@ const navLinksRight = [
     height: 14px;
   }
 
-  /* ---------- Light theme overrides ---------- */
-  :global(.theme-light) .nav__pill,
-  :global(.theme-light) .nav__right {
-    background: rgba(255, 255, 255, 0.7);
+  /* ---------- Sliding bg (shared per pill) ---------- */
+  .nav__bg {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 0;
+    width: 0;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+      180deg,
+      rgba(245, 245, 244, 0.12),
+      rgba(245, 245, 244, 0.04)
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.10),
+      inset 0 0 0 1px rgba(245, 245, 244, 0.06);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transform-origin: center;
+    transition:
+      left 320ms var(--ease-out),
+      width 320ms var(--ease-out),
+      opacity 200ms var(--ease-out),
+      transform 80ms var(--ease-out);
+  }
+  .nav__bg.is-visible {
+    opacity: 1;
+  }
+  .nav__bg.is-pressing {
+    transform: scale(0.9);
+  }
+
+  /* Emerald halo grows in on first appearance, rides along during slides. */
+  .nav__bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 10px 26px -8px rgba(16, 185, 129, 0.45);
+    opacity: 0;
+    transform: scale(0.78);
+    transform-origin: center bottom;
+    pointer-events: none;
+    transition:
+      opacity 320ms var(--ease-out) 40ms,
+      transform 380ms var(--ease-out) 40ms;
+  }
+  .nav__bg.is-visible::after {
+    opacity: 1;
+    transform: scale(1);
   }
 
   /* ---------- Responsive ---------- */
@@ -262,3 +311,76 @@ const navLinksRight = [
     }
   }
 </style>
+
+<script>
+  function initNavMagic(): void {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+    const pills = document.querySelectorAll<HTMLElement>("[data-nav-pill]");
+    if (pills.length === 0) return;
+
+    for (const pill of pills) {
+      if (pill.dataset.navMagicInit === "true") continue;
+      pill.dataset.navMagicInit = "true";
+      bindPill(pill);
+    }
+  }
+
+  function bindPill(pill: HTMLElement): void {
+    const bg = pill.querySelector<HTMLElement>("[data-nav-bg]");
+    const links = Array.from(
+      pill.querySelectorAll<HTMLAnchorElement>("a[data-nav-link]"),
+    );
+    if (!bg || links.length === 0) return;
+
+    let currentTarget: HTMLAnchorElement | null = null;
+
+    const moveTo = (link: HTMLAnchorElement): void => {
+      const r = link.getBoundingClientRect();
+      const pr = pill.getBoundingClientRect();
+      const left = r.left - pr.left;
+      const width = r.width;
+
+      const justAppearing = !bg.classList.contains("is-visible");
+      if (justAppearing) {
+        // Snap to position with transitions disabled, then fade in.
+        bg.style.transition = "none";
+        bg.style.left = `${left}px`;
+        bg.style.width = `${width}px`;
+        // Force reflow so the snap takes effect before re-enabling transitions.
+        void bg.offsetWidth;
+        bg.style.transition = "";
+        bg.classList.add("is-visible");
+      } else if (link !== currentTarget) {
+        bg.style.left = `${left}px`;
+        bg.style.width = `${width}px`;
+      }
+      currentTarget = link;
+    };
+
+    const hide = (): void => {
+      bg.classList.remove("is-visible");
+      bg.classList.remove("is-pressing");
+      currentTarget = null;
+    };
+
+    for (const link of links) {
+      link.addEventListener("pointerenter", () => moveTo(link));
+      link.addEventListener("pointerdown", () =>
+        bg.classList.add("is-pressing"),
+      );
+      link.addEventListener("pointerup", () =>
+        bg.classList.remove("is-pressing"),
+      );
+      link.addEventListener("pointerleave", () =>
+        bg.classList.remove("is-pressing"),
+      );
+      link.addEventListener("pointercancel", () =>
+        bg.classList.remove("is-pressing"),
+      );
+    }
+
+    pill.addEventListener("pointerleave", () => hide());
+  }
+
+  initNavMagic();
+</script>
