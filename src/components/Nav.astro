@@ -246,6 +246,11 @@ const navLinksRight = [
   .nav__right a.is-icon svg {
     width: 14px;
     height: 14px;
+    transition: transform 200ms var(--ease-out);
+  }
+  .nav__right a.is-icon:hover svg,
+  .nav__right a.is-icon:focus-visible svg {
+    transform: scale(1.06);
   }
 
   /* ---------- Sliding bg (shared per pill) ---------- */
