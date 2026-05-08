@@ -6,13 +6,7 @@ import Hero from "~/components/Hero.astro";
 
 <BaseLayout>
   <div class="page" data-screen-label="01 Hero">
-    <div class="page__grid"></div>
-
-    <div class="page__bloom" aria-hidden="true">
-      <div class="page__bloom-blob page__bloom-blob--a"></div>
-      <div class="page__bloom-blob page__bloom-blob--b"></div>
-      <div class="page__bloom-blob page__bloom-blob--c"></div>
-    </div>
+    <canvas class="page__threads" aria-hidden="true"></canvas>
 
     <Nav />
     <Hero />
@@ -22,7 +16,136 @@ import Hero from "~/components/Hero.astro";
 </BaseLayout>
 
 <script>
-  import "~/lib/interactive-bg";
+  // ── Threads background — pulled vertical lines bowing toward the cursor ──
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const canvas = document.querySelector<HTMLCanvasElement>(".page__threads");
+
+  if (canvas && !reducedMotion) {
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      let stageW = 0;
+      let stageH = 0;
+
+      function resizeCanvas(): void {
+        if (!canvas) return;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        stageW = canvas.clientWidth;
+        stageH = canvas.clientHeight;
+        canvas.width  = Math.floor(stageW * dpr);
+        canvas.height = Math.floor(stageH * dpr);
+      }
+
+      resizeCanvas();
+      window.addEventListener("resize", resizeCanvas, { passive: true });
+
+      // ── Cursor with lerp ────────────────────────────────────────────────
+      const LERP_RATE = 0.05;
+      let rawX  = stageW / 2;
+      let rawY  = stageH / 2;
+      let lerpX = rawX;
+      let lerpY = rawY;
+
+      window.addEventListener("mousemove", (e) => {
+        rawX = e.clientX;
+        rawY = e.clientY;
+      }, { passive: true });
+
+      // ── Grid params ─────────────────────────────────────────────────────
+      const LINE_SPACING   = 48;
+      const SEGMENTS       = 72;
+      const SIGMA          = 165;
+      const INV_2SIG2      = 1 / (2 * SIGMA * SIGMA);
+      const GAIN           = 0.82;
+      const DRIFT_AMP      = 3.2;
+      const DRIFT_FREQ     = 0.00031;
+
+      const segFracs: number[] = [];
+      for (let s = 0; s <= SEGMENTS; s++) segFracs.push(s / SEGMENTS);
+
+      function buildLineXs(): number[] {
+        const xs: number[] = [];
+        const first = (stageW % LINE_SPACING) / 2;
+        for (let x = first; x <= stageW; x += LINE_SPACING) xs.push(x);
+        return xs;
+      }
+
+      // ── Animation loop ──────────────────────────────────────────────────
+      function loop(now: number): void {
+        if (!canvas || !ctx) return;
+
+        lerpX += (rawX - lerpX) * LERP_RATE;
+        lerpY += (rawY - lerpY) * LERP_RATE;
+
+        const dpr = canvas.width / stageW;
+        const cx  = lerpX;
+        const cy  = lerpY;
+
+        const drift =
+          Math.sin(now * DRIFT_FREQ)         * DRIFT_AMP +
+          Math.sin(now * DRIFT_FREQ * 1.618) * DRIFT_AMP * 0.4;
+
+        const lineXs = buildLineXs();
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const GREY_RGBA      = "rgba(180, 180, 175, 0.28)";
+        const focusFrac      = Math.max(0, Math.min(1, cy / stageH));
+        const X_RADIUS       = 300;
+        const FADE_HALF_PEAK = 0.27;
+
+        for (const baseX of lineXs) {
+          const dx     = baseX - cx;
+          const dxNorm = dx / X_RADIUS;
+          const circleY = dxNorm * dxNorm < 1
+            ? Math.sqrt(1 - dxNorm * dxNorm)
+            : 0;
+
+          ctx.beginPath();
+          for (let s = 0; s <= SEGMENTS; s++) {
+            const segY = segFracs[s] * stageH;
+            const dy   = segY - cy;
+            const gauss = Math.exp(-(dy * dy + dx * dx) * INV_2SIG2);
+            const pull  = (cx - baseX) * gauss * GAIN;
+
+            const linePhase = baseX * 0.017;
+            const ambientX  = drift * Math.sin(now * DRIFT_FREQ * 0.5 + linePhase) * 0.6 + drift;
+
+            const dispX = (baseX + pull + ambientX) * dpr;
+            const dispY = segY * dpr;
+
+            if (s === 0) ctx.moveTo(dispX, dispY);
+            else         ctx.lineTo(dispX, dispY);
+          }
+
+          const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          grad.addColorStop(0, GREY_RGBA);
+
+          if (circleY > 0.02) {
+            const fadeHalf  = FADE_HALF_PEAK * circleY;
+            const fStart    = Math.max(0.0001, focusFrac - fadeHalf);
+            const fEnd      = Math.min(0.9999, focusFrac + fadeHalf);
+            const peakAlpha = (0.95 * circleY).toFixed(3);
+            const peakColor = `rgba(110, 231, 183, ${peakAlpha})`;
+
+            if (fStart > 0.0001) grad.addColorStop(fStart, GREY_RGBA);
+            grad.addColorStop(focusFrac, peakColor);
+            if (fEnd < 0.9999)   grad.addColorStop(fEnd, GREY_RGBA);
+          }
+
+          grad.addColorStop(1, GREY_RGBA);
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = dpr;
+          ctx.stroke();
+        }
+
+        requestAnimationFrame(loop);
+      }
+
+      requestAnimationFrame(loop);
+    }
+  }
 </script>
 
 <style>
@@ -34,22 +157,19 @@ import Hero from "~/components/Hero.astro";
     isolation: isolate;
   }
 
-  /* Blueprint grid backdrop.
-     Bounded vertically so no lines extend past the rail's top border
-     ("the line under my name"). The radial mask creates a soft oval
-     vignette that fades out before reaching any of the four edges.
-     Cursor X/Y from --mx, --my (set by interactive-bg.ts) tilts the
-     plane via perspective + rotateX/Y for a holographic depth feel. */
-  .page__grid {
+  /* Threads background — vertical line field that bows toward the cursor with
+     a soft elliptical green highlight. The vignette mask fades the field to
+     black before reaching the corners where edge UI lives. */
+  .page__threads {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 60px;
-    background-image:
-      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-    background-size: 80px 80px;
+    width: 100%;
+    height: calc(100% - 60px);
+    pointer-events: none;
+    z-index: 0;
     mask-image: radial-gradient(
       ellipse 70% 60% at 50% 48%,
       black 0%,
@@ -62,126 +182,11 @@ import Hero from "~/components/Hero.astro";
       black 28%,
       transparent 82%
     );
-    pointer-events: none;
-    z-index: 0;
-    transform-origin: center;
-    transform: perspective(1400px)
-      rotateX(calc(var(--my, 0) * -5deg))
-      rotateY(calc(var(--mx, 0) * 5deg));
-    will-change: transform;
-  }
-
-  /* Roaming accent bloom — tracks the cursor with a weighted lerp and
-     stretches via axis-aligned scale on the container (no rotation).
-     Inside, three concentric blobs of different sizes and morph cycles
-     drift apart on idle but collapse to the centre when --blob-spread
-     drops (high cursor velocity). The combined effect: stretching
-     container + collapsing blobs reads as a liquid being dragged.
-
-     Container opacity caps the additive screen-blended glow at the same
-     effective brightness as the original static bloom (~0.55) so text
-     stays readable. */
-  .page__bloom {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: clamp(380px, 36vw, 540px);
-    height: clamp(380px, 36vw, 540px);
-    transform: translate3d(
-        calc(var(--bloom-x, 50vw) - 50%),
-        calc(var(--bloom-y, 60vh) - 50%),
-        0
-      )
-      scale(var(--bloom-sx, 1), var(--bloom-sy, 1));
-    transform-origin: center;
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(48px);
-    mix-blend-mode: screen;
-    opacity: 0.55;
-    will-change: transform;
-  }
-
-  .page__bloom-blob {
-    position: absolute;
-    pointer-events: none;
-    background: radial-gradient(
-      circle at 50% 50%,
-      var(--color-accent-glow),
-      transparent 65%
-    );
-    will-change: transform, border-radius;
-  }
-
-  /* Concentric anchors: each blob centred in the container, with
-     successively smaller sizes. At spread = 0 the keyframe translates
-     are scaled to nothing, so the blobs collapse onto each other.
-     At spread = 1 they drift visibly apart through the keyframe cycle. */
-  .page__bloom-blob--a {
-    inset: 8%;
-    animation: blob-morph 13s var(--ease-in-out) infinite;
-  }
-  .page__bloom-blob--b {
-    inset: 22%;
-    animation: blob-morph 17s var(--ease-in-out) -4s infinite;
-  }
-  .page__bloom-blob--c {
-    inset: 34%;
-    animation: blob-morph 21s var(--ease-in-out) -9s infinite;
-  }
-
-  /* Translate amplitudes are multiplied by --blob-spread so velocity
-     can compress them. Border-radius and scale animate independently
-     of spread so the shape keeps morphing even when collapsed. */
-  @keyframes blob-morph {
-    0% {
-      border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
-      transform: translate(0%, 0%) scale(1);
-    }
-    20% {
-      border-radius: 30% 70% 40% 60% / 60% 30% 70% 40%;
-      transform: translate(
-          calc(var(--blob-spread, 1) * 14%),
-          calc(var(--blob-spread, 1) * -10%)
-        )
-        scale(1.08);
-    }
-    40% {
-      border-radius: 50% 50% 60% 40% / 40% 50% 60% 50%;
-      transform: translate(
-          calc(var(--blob-spread, 1) * -12%),
-          calc(var(--blob-spread, 1) * 14%)
-        )
-        scale(0.94);
-    }
-    60% {
-      border-radius: 40% 60% 30% 70% / 70% 40% 50% 60%;
-      transform: translate(
-          calc(var(--blob-spread, 1) * -14%),
-          calc(var(--blob-spread, 1) * -8%)
-        )
-        scale(1.04);
-    }
-    80% {
-      border-radius: 70% 30% 50% 50% / 30% 70% 50% 60%;
-      transform: translate(
-          calc(var(--blob-spread, 1) * 10%),
-          calc(var(--blob-spread, 1) * 12%)
-        )
-        scale(0.96);
-    }
-    100% {
-      border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
-      transform: translate(0%, 0%) scale(1);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .page__bloom-blob {
-      animation: none;
-    }
-    .page__grid {
-      transform: none;
+    .page__threads {
+      display: none;
     }
   }
 
