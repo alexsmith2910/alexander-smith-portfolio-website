@@ -66,9 +66,15 @@ const taglineParts = tagline.split("&");
     <div class="stage__card" aria-hidden="true">
       <span class="stage__card-label">Featured</span>
     </div>
-    <span class="stage__chip" aria-hidden="true">
-      <span class="stage__chip-bullet"></span>
-      {midChip}
+    <button
+      class="stage__chip"
+      type="button"
+      data-chip-cta
+      aria-label={`${midChip} — view case study`}
+    >
+      <span class="stage__chip-fill" aria-hidden="true"></span>
+      <span class="stage__chip-bullet" aria-hidden="true"></span>
+      <span class="stage__chip-label">{midChip}</span>
       <svg
         class="stage__chip-arrow"
         viewBox="0 0 24 24"
@@ -77,11 +83,12 @@ const taglineParts = tagline.split("&");
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
+        aria-hidden="true"
       >
         <path d="M7 17 17 7"></path>
         <path d="M7 7h10v10"></path>
       </svg>
-    </span>
+    </button>
   </div>
 
   <div class="rail fade-up delay-4">
@@ -292,7 +299,36 @@ const taglineParts = tagline.split("&");
     color: var(--color-fg-2);
     letter-spacing: 0;
     text-transform: none;
+    text-align: left;
     position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .stage__chip:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .stage__chip-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    pointer-events: none;
+    z-index: 1;
+    transform: translate(-50%, -50%) scale(0);
+    will-change: transform;
+  }
+  .stage__chip-bullet,
+  .stage__chip-label,
+  .stage__chip-arrow {
+    position: relative;
+    z-index: 2;
   }
   .stage__chip-bullet {
     width: 8px;
@@ -308,6 +344,7 @@ const taglineParts = tagline.split("&");
     width: 14px;
     height: 14px;
     color: var(--color-fg-3);
+    will-change: transform;
   }
 
   /* ---------- The wordmark ---------- */
@@ -476,3 +513,8 @@ const taglineParts = tagline.split("&");
     }
   }
 </style>
+
+<script>
+  import { initChipFill } from "~/lib/chip-fill";
+  initChipFill();
+</script>

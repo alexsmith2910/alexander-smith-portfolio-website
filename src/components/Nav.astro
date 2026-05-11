@@ -43,19 +43,6 @@ const navLinksRight = [
         </a>
       ))
     }
-    <span class="nav__pill-mark" aria-hidden="true">
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M5 12h14"></path>
-        <path d="m12 5 7 7-7 7"></path>
-      </svg>
-    </span>
     {
       navLinksRight.map(({ href, label }) => (
         <a href={href} aria-label={label} data-nav-link>
@@ -179,32 +166,6 @@ const navLinksRight = [
   .nav__pill a:focus-visible {
     color: var(--color-fg-1);
   }
-  .nav__pill-mark {
-    width: 28px;
-    height: 28px;
-    display: grid;
-    place-items: center;
-    background: var(--color-accent);
-    border-radius: 50%;
-    color: var(--color-accent-fg);
-    margin: 0 2px;
-    position: relative;
-  }
-  .nav__pill-mark::after {
-    content: "";
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    background: var(--color-accent);
-    opacity: 0.35;
-    filter: blur(6px);
-    z-index: -1;
-  }
-  .nav__pill-mark svg {
-    width: 12px;
-    height: 12px;
-  }
-
   /* ---------- Right cluster ---------- */
   .nav__right {
     justify-self: end;
