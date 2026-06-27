@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Space+Grotesk:wght@400;500;600&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<meta name="design_doc_mode" content="canvas">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  ::selection{background:#0a0a0a;color:#e8e6e1}
+  .ob-card{background:#e8e6e1;color:#0a0a0a;font-family:'Space Grotesk',sans-serif;width:1280px;height:820px;overflow:hidden;position:relative;box-shadow:0 1px 3px rgba(0,0,0,.10);border-radius:2px}
+  .ob-lbl{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#3a382f;margin-bottom:14px;display:flex;align-items:baseline;gap:12px}
+  .ob-lbl b{font-weight:700;color:#0a0a0a}
+  .ob-lbl span{font-size:11px;opacity:.55;letter-spacing:.1em}
+  .ob-nav{position:absolute;top:0;left:0;right:0;height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;z-index:5}
+  .ob-logo{font-family:'Instrument Serif',serif;font-style:italic;font-size:24px}
+  .ob-menu{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;display:flex;gap:12px;align-items:center}
+  .ob-stripe{background:repeating-linear-gradient(118deg,#c4c0b6,#c4c0b6 9px,#cbc8bf 9px,#cbc8bf 18px)}
+  .ob-kick{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.32em;text-transform:uppercase;display:flex;gap:14px;align-items:center}
+  .ob-kick i{width:30px;height:1px;background:#0a0a0a;display:inline-block}
+  .ob-mono{font-family:'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+  .ob-serif{font-family:'Instrument Serif',serif;letter-spacing:-.02em;line-height:.98}
+</style>
+</helmet>
+
+<!-- ============================================================= 1 · HORIZONTAL TRACK ============================================================= -->
+<div style="position:absolute;left:0;top:0;width:1280px">
+  <div class="ob-lbl" data-drags-parent="1"><b>01 — Horizontal track</b><span>scroll ⇢ sideways · viewport-snapped panels</span></div>
+  <div class="ob-card">
+    <div class="ob-nav"><span class="ob-logo">Oblique</span><span class="ob-menu"><span style="position:relative;width:24px;height:11px;display:inline-block"><i style="position:absolute;right:0;top:1px;width:24px;height:2px;background:#0a0a0a"></i><i style="position:absolute;right:0;bottom:1px;width:16px;height:2px;background:#0a0a0a"></i></span></span></div>
+    <!-- horizontal panels, mid-scroll -->
+    <div style="position:absolute;top:0;bottom:0;left:0;display:flex;align-items:center;gap:0;transform:translateX(-260px)">
+      <!-- prev (leaving) -->
+      <div style="width:1000px;height:100%;flex:0 0 1000px;display:flex;align-items:center;padding:0 70px;opacity:.32">
+        <div style="width:520px;height:560px;position:relative;overflow:hidden;background:#efece6"><div class="ob-stripe" style="position:absolute;inset:0"></div></div>
+      </div>
+      <!-- active -->
+      <div style="width:1180px;flex:0 0 1180px;height:100%;display:flex;align-items:center;gap:64px;padding:0 70px">
+        <div style="flex:0 0 600px;height:600px;position:relative;overflow:hidden;background:#efece6">
+          <div class="ob-stripe" style="position:absolute;inset:0"></div>
+          <span class="ob-mono" style="position:absolute;left:18px;bottom:14px;font-size:11px;color:#6b675e">[ meridian_launch.mp4 ]</span>
+        </div>
+        <div style="flex:1">
+          <div class="ob-mono" style="font-size:12px;opacity:.5;margin-bottom:18px">02 / 05 — immersive launch</div>
+          <h3 class="ob-serif" style="font-size:80px;font-style:italic">Meridian</h3>
+          <p style="margin-top:22px;font-size:15px;line-height:1.55;opacity:.7;max-width:34ch">Nine choreographed acts unfold across a single horizontal pull — the page becomes the timeline.</p>
+        </div>
+      </div>
+      <!-- next (peeking) -->
+      <div style="width:400px;flex:0 0 400px;height:100%;display:flex;align-items:center;padding:0 0 0 0;opacity:.5">
+        <div style="width:360px;height:520px;position:relative;overflow:hidden;background:#efece6"><div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(62deg,#c7c3b9,#c7c3b9 7px,#cecabf 7px,#cecabf 14px)"></div></div>
+      </div>
+    </div>
+    <!-- progress rail -->
+    <div style="position:absolute;left:48px;right:48px;bottom:44px;display:flex;align-items:center;gap:24px">
+      <span class="ob-mono" style="font-size:12px">02</span>
+      <div style="flex:1;height:1px;background:rgba(10,10,10,.16);position:relative"><div style="position:absolute;left:0;top:-1px;height:3px;width:42%;background:#0a0a0a"></div></div>
+      <span class="ob-mono" style="font-size:12px;opacity:.45">05</span>
+      <span class="ob-mono" style="font-size:11px;opacity:.45;margin-left:14px">drag · scroll · →</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= 2 · THE INDEX (registry) ============================================================= -->
+<div style="position:absolute;left:1400px;top:0;width:1280px">
+  <div class="ob-lbl" data-drags-parent="1"><b>02 — The index</b><span>vertical registry · hover floats the media</span></div>
+  <div class="ob-card">
+    <div class="ob-nav"><span class="ob-logo">Oblique</span><span class="ob-menu" style="opacity:.5">Index ✕</span></div>
+    <div style="padding:120px 64px 0">
+      <div class="ob-kick" style="margin-bottom:40px"><i></i>Work — index 2026</div>
+      <!-- rows -->
+      <div>
+        <div style="display:flex;align-items:center;gap:40px;padding:26px 0;border-top:1px solid rgba(10,10,10,.14)">
+          <span class="ob-mono" style="font-size:12px;opacity:.4;width:34px">01</span>
+          <span class="ob-serif" style="font-size:52px;flex:1">Aurora Systems</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.5;width:200px">WebGL brand world</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.4">2026</span>
+        </div>
+        <!-- active row + floating preview -->
+        <div style="position:relative;display:flex;align-items:center;gap:40px;padding:26px 0;border-top:1px solid rgba(10,10,10,.14);transform:skewX(-6deg) translateX(14px)">
+          <span class="ob-mono" style="font-size:12px;opacity:.4;width:34px">02</span>
+          <span class="ob-serif" style="font-size:52px;flex:1;font-style:italic">Meridian</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.5;width:200px">Immersive launch</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.4">2025</span>
+          <div style="position:absolute;right:240px;top:-70px;width:300px;height:200px;overflow:hidden;background:#efece6;box-shadow:0 16px 50px rgba(10,10,10,.18);transform:skewX(6deg)"><div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(62deg,#c7c3b9,#c7c3b9 7px,#cecabf 7px,#cecabf 14px)"></div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:40px;padding:26px 0;border-top:1px solid rgba(10,10,10,.14);opacity:.55">
+          <span class="ob-mono" style="font-size:12px;opacity:.4;width:34px">03</span>
+          <span class="ob-serif" style="font-size:52px;flex:1">Koto Labs</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.5;width:200px">Installation</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.4">2025</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:40px;padding:26px 0;border-top:1px solid rgba(10,10,10,.14);opacity:.55">
+          <span class="ob-mono" style="font-size:12px;opacity:.4;width:34px">04</span>
+          <span class="ob-serif" style="font-size:52px;flex:1">Saker</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.5;width:200px">Brand identity</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.4">2024</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:40px;padding:26px 0;border-top:1px solid rgba(10,10,10,.14);border-bottom:1px solid rgba(10,10,10,.14);opacity:.55">
+          <span class="ob-mono" style="font-size:12px;opacity:.4;width:34px">05</span>
+          <span class="ob-serif" style="font-size:52px;flex:1">Volume One</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.5;width:200px">Configurator</span>
+          <span class="ob-mono" style="font-size:11px;opacity:.4">2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= 3 · TIMELINE SPINE ============================================================= -->
+<div style="position:absolute;left:2800px;top:0;width:1280px">
+  <div class="ob-lbl" data-drags-parent="1"><b>03 — Timeline spine</b><span>chronological · projects hang off a vertical line</span></div>
+  <div class="ob-card">
+    <div class="ob-nav"><span class="ob-logo">Oblique</span><span class="ob-menu" style="opacity:.5">Menu</span></div>
+    <div style="padding:118px 64px 0;position:relative;height:100%">
+      <div class="ob-kick" style="margin-bottom:34px"><i></i>Work — a timeline</div>
+      <!-- spine -->
+      <div style="position:absolute;left:140px;top:170px;bottom:0;width:1px;background:rgba(10,10,10,.18)"></div>
+      <!-- entries -->
+      <div style="display:flex;flex-direction:column;gap:48px;padding-left:40px">
+        <div style="display:flex;align-items:flex-start;gap:60px;position:relative">
+          <span class="ob-serif" style="font-size:34px;font-style:italic;opacity:.4;width:96px">2026</span>
+          <span style="position:absolute;left:36px;top:18px;width:9px;height:9px;border-radius:50%;background:#0a0a0a"></span>
+          <div style="flex:0 0 230px;height:150px;position:relative;overflow:hidden;background:#efece6"><div class="ob-stripe" style="position:absolute;inset:0"></div></div>
+          <div style="flex:1;padding-top:6px"><h3 class="ob-serif" style="font-size:44px">Aurora Systems</h3><p style="margin-top:10px;font-size:14px;opacity:.65;max-width:30ch;line-height:1.5">Living particle identity driven by live network telemetry.</p></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:60px;position:relative">
+          <span class="ob-serif" style="font-size:34px;font-style:italic;opacity:.4;width:96px">2025</span>
+          <span style="position:absolute;left:36px;top:18px;width:9px;height:9px;border-radius:50%;background:#0a0a0a"></span>
+          <div style="flex:0 0 230px;height:150px;position:relative;overflow:hidden;background:#efece6"><div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(62deg,#c7c3b9,#c7c3b9 7px,#cecabf 7px,#cecabf 14px)"></div></div>
+          <div style="flex:1;padding-top:6px"><h3 class="ob-serif" style="font-size:44px;font-style:italic">Meridian</h3><p style="margin-top:10px;font-size:14px;opacity:.65;max-width:30ch;line-height:1.5">A flagship launch told across nine choreographed acts.</p></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:60px;position:relative;opacity:.5">
+          <span class="ob-serif" style="font-size:34px;font-style:italic;opacity:.5;width:96px">2025</span>
+          <span style="position:absolute;left:36px;top:18px;width:9px;height:9px;border-radius:50%;background:#0a0a0a;opacity:.5"></span>
+          <div style="flex:0 0 230px;height:150px;position:relative;overflow:hidden;background:#efece6"><div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(150deg,#c2bdb2,#c2bdb2 11px,#cac6bc 11px,#cac6bc 22px)"></div></div>
+          <div style="flex:1;padding-top:6px"><h3 class="ob-serif" style="font-size:44px">Koto Labs</h3><p style="margin-top:10px;font-size:14px;opacity:.65;max-width:30ch;line-height:1.5">Generative projection responding to a gallery floor.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= 4 · STICKY TOC RAIL ============================================================= -->
+<div style="position:absolute;left:0;top:960px;width:1280px">
+  <div class="ob-lbl" data-drags-parent="1"><b>04 — Sticky TOC rail</b><span>left index tracks scroll · content scrolls right</span></div>
+  <div class="ob-card">
+    <div class="ob-nav" style="left:auto;right:0;width:auto;padding-right:48px"><span class="ob-menu" style="opacity:.5">Menu</span></div>
+    <!-- left rail -->
+    <div style="position:absolute;left:0;top:0;bottom:0;width:360px;padding:74px 48px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(10,10,10,.12)">
+      <div class="ob-mono" style="font-size:11px;letter-spacing:.3em;opacity:.5;margin-bottom:40px">Index — 02 / 05</div>
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <div style="display:flex;align-items:center;gap:18px;opacity:.4"><span class="ob-mono" style="font-size:11px">01</span><span class="ob-serif" style="font-size:30px">Aurora Systems</span></div>
+        <div style="display:flex;align-items:center;gap:18px"><span style="width:18px;height:1px;background:#0a0a0a"></span><span class="ob-mono" style="font-size:11px">02</span><span class="ob-serif" style="font-size:34px;font-style:italic">Meridian</span></div>
+        <div style="display:flex;align-items:center;gap:18px;opacity:.4"><span class="ob-mono" style="font-size:11px">03</span><span class="ob-serif" style="font-size:30px">Koto Labs</span></div>
+        <div style="display:flex;align-items:center;gap:18px;opacity:.4"><span class="ob-mono" style="font-size:11px">04</span><span class="ob-serif" style="font-size:30px">Saker</span></div>
+        <div style="display:flex;align-items:center;gap:18px;opacity:.4"><span class="ob-mono" style="font-size:11px">05</span><span class="ob-serif" style="font-size:30px">Volume One</span></div>
+      </div>
+      <!-- progress -->
+      <div style="position:absolute;left:48px;bottom:54px;width:1px;height:130px;background:rgba(10,10,10,.16)"><div style="position:absolute;left:-1px;top:0;width:3px;height:38%;background:#0a0a0a"></div></div>
+    </div>
+    <!-- content -->
+    <div style="position:absolute;left:360px;right:0;top:0;bottom:0;padding:120px 64px 0;overflow:hidden">
+      <div class="ob-mono" style="font-size:12px;opacity:.5;margin-bottom:26px">02 / 05 — immersive launch · 2025</div>
+      <h2 class="ob-serif" style="font-size:96px;font-style:italic">Meridian</h2>
+      <div style="margin-top:40px;width:100%;height:380px;position:relative;overflow:hidden;background:#efece6">
+        <div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(62deg,#c7c3b9,#c7c3b9 7px,#cecabf 7px,#cecabf 14px)"></div>
+        <span class="ob-mono" style="position:absolute;left:20px;bottom:16px;font-size:11px;color:#6b675e">[ meridian_launch.mp4 ]</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= 5 · OBLIQUE STACK (signature) ============================================================= -->
+<div style="position:absolute;left:1400px;top:960px;width:1280px">
+  <div class="ob-lbl" data-drags-parent="1"><b>05 — Oblique stack</b><span>signature · sheared cards on a diagonal axis</span></div>
+  <div class="ob-card" style="background:#060606;color:#e8e6e1">
+    <div class="ob-nav"><span class="ob-logo">Oblique</span><span class="ob-menu" style="color:#e8e6e1">Menu</span></div>
+    <!-- diagonal plasma hint -->
+    <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 100%,rgba(40,33,70,.55),transparent 60%);pointer-events:none"></div>
+    <div class="ob-kick" style="position:absolute;top:118px;left:64px;color:#e8e6e1"><i style="background:#e8e6e1"></i>Work — oblique stack</div>
+    <!-- sheared cards marching up-right -->
+    <div style="position:absolute;left:64px;right:0;top:200px;bottom:0;transform:skewY(-7deg);transform-origin:left top">
+      <div style="display:flex;flex-direction:column;gap:30px">
+        <div style="display:flex;align-items:center;gap:40px">
+          <span class="ob-mono" style="font-size:11px;opacity:.45;width:30px">01</span>
+          <div style="width:260px;height:150px;overflow:hidden;background:#15131c;position:relative"><div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(118deg,#2a2636,#2a2636 9px,#332d40 9px,#332d40 18px)"></div></div>
+          <span class="ob-serif" style="font-size:56px">Aurora Systems</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:40px;transform:translateX(120px)">
+          <span class="ob-mono" style="font-size:11px;opacity:.45;width:30px">02</span>
+          <div style="width:260px;height:150px;overflow:hidden;background:#15131c;position:relative"><div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(62deg,#2c2738,#2c2738 7px,#352f44 7px,#352f44 14px)"></div></div>
+          <span class="ob-serif" style="font-size:56px;font-style:italic">Meridian</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:40px;transform:translateX(240px);opacity:.6">
+          <span class="ob-mono" style="font-size:11px;opacity:.45;width:30px">03</span>
+          <div style="width:260px;height:150px;overflow:hidden;background:#15131c;position:relative"><div class="ob-stripe" style="position:absolute;inset:0;background:repeating-linear-gradient(150deg,#28242f,#28242f 11px,#322c3d 11px,#322c3d 22px)"></div></div>
+          <span class="ob-serif" style="font-size:56px">Koto Labs</span>
+        </div>
+      </div>
+    </div>
+    <div class="ob-mono" style="position:absolute;left:64px;bottom:44px;font-size:11px;opacity:.5;letter-spacing:.18em">scroll ⇣ — the stack glides along the oblique</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Space+Grotesk:wght@400;500;600&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#e8e6e1;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scrollbar-width:none;-ms-overflow-style:none}
+  *::-webkit-scrollbar{width:0;height:0;display:none}
+  ::selection{background:#0a0a0a;color:#e8e6e1}
+  @keyframes labgrain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-2%)}100%{transform:translate(0,0)}}
+  @keyframes labblink{0%,52%{opacity:1}53%,100%{opacity:.16}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+  @media (hover:none){[data-cursor-ring],[data-cursor-dot],[data-cursor-label]{display:none!important}[data-root]{cursor:auto!important}}
+  @media (max-width:900px){[data-rail]{display:none!important}[data-section]{min-height:auto!important;padding-top:clamp(40px,8vh,90px)!important;padding-bottom:clamp(40px,8vh,90px)!important}}
+</style>
+</helmet>
+
+<div data-root="" ref="{{ r }}" data-screen-label="Lab" style="position:relative;width:100%;min-height:100vh;background:#e8e6e1;color:#0a0a0a;font-family:'Space Grotesk',sans-serif;cursor:none;overflow-x:clip">
+
+  <div data-grain="" style="position:fixed;inset:-40%;width:180%;height:180%;z-index:3;pointer-events:none;opacity:.4;mix-blend-mode:overlay;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;);animation:labgrain 8s steps(6) infinite"></div>
+
+  <div data-cursor-ring="" style="position:fixed;top:0;left:0;z-index:80;pointer-events:none;width:38px;height:38px;border:1px solid rgba(10,10,10,.55);border-radius:50%;transform:translate(-50%,-50%);transition:width .35s cubic-bezier(.22,1,.36,1),height .35s cubic-bezier(.22,1,.36,1),background .35s;mix-blend-mode:difference"></div>
+  <div data-cursor-dot="" style="position:fixed;top:0;left:0;z-index:81;pointer-events:none;width:5px;height:5px;background:#e8e6e1;border-radius:50%;transform:translate(-50%,-50%);mix-blend-mode:difference"></div>
+  <div data-cursor-label="" style="position:fixed;top:0;left:0;z-index:81;pointer-events:none;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e8e6e1;mix-blend-mode:difference;opacity:0;transform:translate(34px,14px);white-space:nowrap;transition:opacity .3s"></div>
+
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:24px clamp(20px,4vw,56px);mix-blend-mode:difference;color:#e8e6e1">
+    <a href="Oblique.dc.html" data-cursor="home" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:26px;text-decoration:none;color:inherit">Oblique</a>
+    <button data-menu-btn="" data-cursor="menu" style="background:none;border:none;cursor:none;color:inherit;display:flex;align-items:center;gap:14px;padding:16px;margin:-16px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:700">
+      <span style="position:relative;width:26px;height:12px;display:inline-block">
+        <i data-mi-top="" style="position:absolute;right:0;top:2px;width:26px;height:2px;background:currentColor;transition:transform .5s cubic-bezier(.7,0,.2,1)"></i>
+        <i data-mi-bot="" style="position:absolute;right:0;bottom:2px;width:18px;height:2px;background:currentColor;transition:transform .5s cubic-bezier(.7,0,.2,1),width .5s"></i>
+      </span>
+    </button>
+  </nav>
+
+  <div data-menu="" style="position:fixed;inset:0;z-index:48;background:#060606;color:#e8e6e1;clip-path:circle(0% at 100% 0%);transition:clip-path .82s cubic-bezier(.76,0,.24,1);pointer-events:none;overflow:hidden">
+    <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 80% at 82% 2%,rgba(123,108,222,.18),transparent 60%),radial-gradient(60% 70% at 8% 100%,rgba(123,108,222,.12),transparent 60%)"></div>
+    <div style="position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px clamp(20px,4vw,56px)">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(2px,1vh,12px)">
+        <a href="Oblique.dc.html" data-cursor="enter" style="text-decoration:none;color:inherit"><span style="display:block;overflow:hidden;padding-bottom:.14em"><span data-menu-link="" style="display:block;transform:translateY(110%);transition:transform .8s cubic-bezier(.22,1,.36,1);font-family:'Instrument Serif',serif;font-size:clamp(40px,7.4vw,96px);line-height:1.12;letter-spacing:-.02em">Index</span></span></a>
+        <a href="Work - Index.dc.html" data-cursor="enter" style="text-decoration:none;color:inherit"><span style="display:block;overflow:hidden;padding-bottom:.14em"><span data-menu-link="" style="display:block;transform:translateY(110%);transition:transform .8s cubic-bezier(.22,1,.36,1);font-family:'Instrument Serif',serif;font-size:clamp(40px,7.4vw,96px);line-height:1.12;letter-spacing:-.02em">Work</span></span></a>
+        <a href="#top" data-cursor="enter" style="text-decoration:none;color:inherit"><span style="display:block;overflow:hidden;padding-bottom:.14em"><span data-menu-link="" style="display:block;transform:translateY(110%);transition:transform .8s cubic-bezier(.22,1,.36,1);font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(40px,7.4vw,96px);line-height:1.12;letter-spacing:-.02em;opacity:.55">Lab</span></span></a>
+        <a href="About.dc.html" data-cursor="enter" style="text-decoration:none;color:inherit"><span style="display:block;overflow:hidden;padding-bottom:.14em"><span data-menu-link="" style="display:block;transform:translateY(110%);transition:transform .8s cubic-bezier(.22,1,.36,1);font-family:'Instrument Serif',serif;font-size:clamp(40px,7.4vw,96px);line-height:1.12;letter-spacing:-.02em">About</span></span></a>
+        <a href="Contact.dc.html" data-cursor="enter" style="text-decoration:none;color:inherit"><span style="display:block;overflow:hidden;padding-bottom:.14em"><span data-menu-link="" style="display:block;transform:translateY(110%);transition:transform .8s cubic-bezier(.22,1,.36,1);font-family:'Instrument Serif',serif;font-size:clamp(40px,7.4vw,96px);line-height:1.12;letter-spacing:-.02em">Contact</span></span></a>
+      </div>
+      <div style="position:absolute;bottom:30px;left:clamp(20px,4vw,56px);right:clamp(20px,4vw,56px);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">
+        <span>hello@oblique.studio</span><span>48.8566°N · 2.3522°E</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="top" style="display:flex;align-items:flex-start">
+
+    <aside data-rail="" style="position:sticky;top:0;height:100vh;flex:0 0 clamp(300px,30vw,420px);display:flex;flex-direction:column;justify-content:flex-start;padding:clamp(96px,13vh,150px) clamp(28px,3vw,52px) clamp(26px,4vh,46px);border-right:1px solid rgba(10,10,10,.14);z-index:10">
+      <div style="margin-bottom:clamp(22px,4vh,44px)">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;display:flex;gap:14px;align-items:center;margin-bottom:14px"><span style="width:30px;height:1px;background:#0a0a0a"></span>The Lab — <span data-counter="">01</span> / 10</div>
+        <div style="font-family:'Instrument Serif',serif;font-size:clamp(30px,3vw,44px);line-height:1;letter-spacing:-.02em;font-style:italic">Field notes<br>&amp; experiments</div>
+      </div>
+      <nav style="display:flex;flex-direction:column;gap:clamp(9px,1.5vh,17px)">
+        <sc-for list="{{ entries }}" as="e" hint-placeholder-count="10">
+          <a href="#" data-railitem="" data-i="{{ $index }}" data-cursor="jump" style="display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;opacity:.36;transition:opacity .5s cubic-bezier(.22,1,.36,1)">
+            <span data-rail-mark="" style="height:1px;width:0;background:#0a0a0a;transition:width .5s cubic-bezier(.22,1,.36,1);flex:0 0 auto"></span>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;flex:0 0 auto;opacity:.7">{{ e.no }}</span>
+            <span data-rail-title="" style="flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Instrument Serif',serif;font-size:clamp(19px,1.7vw,26px);line-height:1.2;letter-spacing:-.015em;transition:font-style .3s">{{ e.title }}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;opacity:.35;flex:0 0 auto;margin-left:auto">{{ e.kind }}</span>
+          </a>
+        </sc-for>
+      </nav>
+      <div data-progress="" style="position:absolute;top:0;right:-1px;width:2px;height:0%;background:#0a0a0a;transition:height .12s linear;pointer-events:none"></div>
+    </aside>
+
+    <main data-content="" style="flex:1 1 auto;min-width:0">
+      <sc-for list="{{ entries }}" as="e" hint-placeholder-count="6">
+        <section data-section="" data-i="{{ $index }}" data-type="{{ e.type }}" style="position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start;padding:clamp(96px,13vh,150px) clamp(28px,4vw,80px);border-bottom:1px solid rgba(10,10,10,.1)">
+          <sc-if value="{{ e.isNote }}" hint-placeholder-val="{{ false }}">
+            <div aria-hidden="true" style="position:absolute;right:clamp(20px,4vw,70px);top:clamp(70px,11vh,120px);font-family:'Instrument Serif',serif;font-size:clamp(150px,26vw,420px);line-height:.8;opacity:.05;pointer-events:none;font-style:italic">{{ e.no }}</div>
+          </sc-if>
+          <div data-reveal="" style="opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(.22,1,.36,1),transform 1s cubic-bezier(.22,1,.36,1);position:relative;max-width:1100px">
+            <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;opacity:.5;margin-bottom:clamp(16px,2.4vh,24px)">{{ e.no }} / 10 — {{ e.typeLabel }} · {{ e.date }} · {{ e.tags }}</div>
+            <h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(40px,6.4vw,104px);line-height:.94;letter-spacing:-.03em;font-style:{{ e.titleStyle }}">{{ e.title }}</h2>
+            <sc-if value="{{ e.isExp }}" hint-placeholder-val="{{ false }}">
+              <div data-sketch-wrap="" data-cursor="open" style="margin-top:clamp(26px,4vh,46px);position:relative;width:100%;height:clamp(260px,46vh,520px);background:#efece6;border:1px solid rgba(10,10,10,.1);overflow:hidden">
+                <canvas data-sketch="" data-kind="{{ e.sketch }}" data-word="{{ e.word }}" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
+                <span style="position:absolute;left:18px;bottom:14px;display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6b675e"><i style="width:6px;height:6px;border-radius:50%;background:#0a0a0a;animation:labblink 1.8s steps(1) infinite"></i>Live — {{ e.tags }}</span>
+                <span style="position:absolute;right:18px;bottom:14px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6b675e">Move the cursor</span>
+                <span data-open="" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity .4s;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;border:1px solid rgba(10,10,10,.55);border-radius:100px;padding:11px 21px;background:rgba(232,230,225,.55);backdrop-filter:blur(2px)">Open ↗</span>
+              </div>
+            </sc-if>
+            <p style="margin-top:clamp(22px,3.4vh,34px);font-size:clamp(16px,1.5vw,20px);line-height:1.6;opacity:.72;max-width:58ch">{{ e.body }}</p>
+            <a href="#" data-cursor="{{ e.actionCursor }}" data-act="" style="display:inline-flex;align-items:center;gap:10px;margin-top:clamp(22px,3vh,32px);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:inherit;border-bottom:1px solid #0a0a0a;padding-bottom:7px">{{ e.action }} <span data-act-ar="" style="display:inline-block;transition:transform .4s cubic-bezier(.22,1,.36,1)">{{ e.actionArrow }}</span></a>
+          </div>
+        </section>
+      </sc-for>
+
+      <footer data-darkzone="" style="position:relative;z-index:1;background:#060606;color:#e8e6e1;overflow:hidden;padding:clamp(66px,12vh,150px) clamp(28px,4vw,80px) 42px">
+        <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 80% at 82% 0%,rgba(123,108,222,.16),transparent 60%),radial-gradient(60% 75% at 6% 100%,rgba(123,108,222,.1),transparent 60%)"></div>
+        <div style="position:relative">
+          <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:clamp(20px,3.5vh,32px);display:inline-flex;gap:14px;align-items:center"><span style="width:30px;height:1px;background:#e8e6e1;display:inline-block;opacity:.6"></span>The log</div>
+          <h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,9vw,150px);line-height:.9;letter-spacing:-.035em;font-style:italic">The log<br>doesn't stop.</h2>
+          <div style="margin-top:clamp(32px,5.5vh,58px);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px">
+            <a href="Contact.dc.html" data-cursor="email" style="font-size:clamp(17px,2.2vw,28px);text-decoration:none;color:inherit;border-bottom:1px solid rgba(232,230,225,.5);padding-bottom:6px">hello@oblique.studio</a>
+            <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.5;display:inline-flex;align-items:center;gap:9px"><i style="width:6px;height:6px;border-radius:50%;background:#e8e6e1;animation:labblink 1.7s steps(1) infinite"></i><span data-live-count="">00</span> rendering</span>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:clamp(44px,7vh,84px);padding-top:30px;border-top:1px solid rgba(232,230,225,.16);display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px 30px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55">
+          <div style="display:flex;gap:22px;flex-wrap:wrap"><a href="Oblique.dc.html" data-cursor="link" style="color:inherit;text-decoration:none">Index</a><a href="Work - Index.dc.html" data-cursor="link" style="color:inherit;text-decoration:none">Work</a><a href="About.dc.html" data-cursor="link" style="color:inherit;text-decoration:none">About</a><a href="Contact.dc.html" data-cursor="link" style="color:inherit;text-decoration:none">Contact</a></div>
+          <span>© 2026 Oblique Studio</span>
+          <span>Built in canvas</span>
+        </div>
+      </footer>
+    </main>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  renderVals(){
+    const E=[
+      { no:'01', type:'exp',  kind:'Flow',     date:'2026.05', title:'Ink Flow',       tags:'Canvas · Noise',    sketch:'flow',          word:'',        body:'A thousand pens released into one invisible current. The field never repeats, and neither do the lines it pulls.' },
+      { no:'02', type:'note', kind:'Note',     date:'2026.04', title:'Sixty frames is a budget', tags:'4 min read', sketch:'',           word:'',        body:'Treating the frame as hard currency changes what you let yourself draw. A short note on spending motion like money.' },
+      { no:'03', type:'exp',  kind:'Input',    date:'2026.03', title:'Proximity',      tags:'Canvas · Input',    sketch:'constellation', word:'',        body:'A scatter of points that only admit they are related when your cursor gets close enough to ask the question.' },
+      { no:'04', type:'exp',  kind:'Math',     date:'2026.02', title:'Lissajous Loom', tags:'Canvas · Math',     sketch:'lissajous',     word:'',        body:'Two frequencies, slightly out of step, weaving a cloth that drifts a fraction further every second it runs.' },
+      { no:'05', type:'note', kind:'Note',     date:'2026.01', title:'Drawing with noise', tags:'5 min read',    sketch:'',              word:'',        body:'Flow fields are the cheapest pencil in the toolbox. How a single noise function quietly becomes a drawing machine.' },
+      { no:'06', type:'exp',  kind:'Type',     date:'2025.11', title:'Sine Type',      tags:'Canvas · Type',     sketch:'sinetype',      word:'oblique', body:'Setting one word on a wave that refuses to hold still. Letterforms as passengers riding the curve, not anchors.' },
+      { no:'07', type:'exp',  kind:'Geometry', date:'2025.10', title:'Phyllotaxis',    tags:'Canvas · Geometry', sketch:'phyllotaxis',   word:'',        body:'One hundred and thirty-seven point five degrees, and nothing else — the angle the sunflower solved long before we did.' },
+      { no:'08', type:'note', kind:'Note',     date:'2025.09', title:'On rationing colour', tags:'4 min read',   sketch:'',              word:'',        body:'Why our own surfaces stay bone and ink, and colour is kept for the one place on a page where it actually means something.' },
+      { no:'09', type:'exp',  kind:'Motion',   date:'2025.08', title:'Signal Ring',    tags:'Canvas · Motion',   sketch:'orbit',         word:'',        body:'A telemetry ring drawn the long way round — nodes, chords, and a single pulse that takes its time getting around.' },
+      { no:'10', type:'note', kind:'Note',     date:'2025.07', title:'Bugs, kept in public', tags:'3 min read',  sketch:'',              word:'',        body:'The case for publishing the unfinished thing the day it breaks, instead of the polished thing that somehow never ships.' },
+    ];
+    E.forEach(e=>{ e.isExp=e.type==='exp'; e.isNote=e.type==='note'; e.typeLabel=e.isExp?'Experiment':'Note'; e.titleStyle=e.isNote?'italic':'normal'; e.action=e.isExp?'Open experiment':'Read note'; e.actionArrow=e.isExp?'↗':'→'; e.actionCursor=e.isExp?'open':'read'; });
+    return {
+      r:(el)=>{ if(el) this._root=el; },
+      entries:E,
+    };
+  }
+
+  boot(){
+    const root=this._root; if(!root || root.__booted) return; root.__booted=true;
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const $=(s)=>root.querySelector(s), $$=(s)=>Array.from(root.querySelectorAll(s));
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const TAU=Math.PI*2;
+
+    const reveal=(el)=>{ el.style.opacity='1'; el.style.transform='none'; };
+    if(reduce){ $$('[data-reveal]').forEach(reveal); }
+    else {
+      const io=new IntersectionObserver((es)=>{ es.forEach(en=>{ if(en.isIntersecting){ reveal(en.target); io.unobserve(en.target); } }); },{ threshold:0.1, rootMargin:'0px 0px -8% 0px' });
+      $$('[data-reveal]').forEach(el=>io.observe(el));
+      setTimeout(()=>{ $$('[data-reveal]').forEach(el=>{ if(getComputedStyle(el).opacity==='0') reveal(el); }); }, 1700);
+    }
+
+    let lenis=null;
+    if(window.Lenis && !reduce){ lenis=new Lenis({ lerp:0.09, wheelMultiplier:1, smoothWheel:true }); document.addEventListener('visibilitychange',()=>{ if(document.hidden)lenis.stop(); else lenis.start(); }); }
+
+    const ring=$('[data-cursor-ring]'), dot=$('[data-cursor-dot]'), clab=$('[data-cursor-label]');
+    const cur={ x:innerWidth/2, y:innerHeight/2, rx:innerWidth/2, ry:innerHeight/2 };
+    addEventListener('mousemove',(e)=>{ cur.x=e.clientX; cur.y=e.clientY; dot.style.transform=`translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`; clab.style.left=e.clientX+'px'; clab.style.top=e.clientY+'px'; clab.style.transform=(e.clientX>innerWidth-150)?'translate(calc(-100% - 44px),14px)':'translate(34px,14px)'; });
+    const labels={ home:'Home', menu:'Menu', enter:'Enter', open:'Open', read:'Read', jump:'View', email:'Say hi', link:'Open' };
+    const bindCursor=(els)=>els.forEach(el=>{ el.addEventListener('mouseenter',()=>{ ring.style.width='62px'; ring.style.height='62px'; ring.style.background='rgba(232,230,225,.08)'; const k=el.getAttribute('data-cursor'); if(k&&labels[k]){ clab.textContent=labels[k]; clab.style.opacity='1'; } }); el.addEventListener('mouseleave',()=>{ ring.style.width='38px'; ring.style.height='38px'; ring.style.background='transparent'; clab.style.opacity='0'; }); });
+    bindCursor($$('a,button,[data-cursor]'));
+
+    const menu=$('[data-menu]'), menuBtn=$('[data-menu-btn]'), iT=$('[data-mi-top]'), iB=$('[data-mi-bot]');
+    const menuLinks=$$('[data-menu-link]');
+    let menuOpen=false;
+    const setMenu=(o)=>{ menuOpen=o; menu.style.pointerEvents=o?'auto':'none'; menu.style.clipPath=`circle(${o?150:0}% at 100% 0%)`; iT.style.transform=o?'translateY(3px) rotate(45deg)':'none'; iB.style.transform=o?'translateY(-3px) rotate(-45deg)':'none'; iB.style.width=o?'26px':'18px'; menuLinks.forEach((l,i)=>{ l.style.transitionDelay=(o?0.14+i*0.07:i*0.02)+'s'; l.style.transform=o?'translateY(0)':'translateY(110%)'; }); };
+    menuBtn.onclick=()=>setMenu(!menuOpen);
+    menuBtn.addEventListener('mouseenter',()=>{ if(!menuOpen) iB.style.width='26px'; });
+    menuBtn.addEventListener('mouseleave',()=>{ if(!menuOpen) iB.style.width='18px'; });
+    addEventListener('keydown',(e)=>{ if(e.key==='Escape'&&menuOpen)setMenu(false); });
+
+    $$('[data-act]').forEach(a=>{ const ar=a.querySelector('[data-act-ar]'); a.addEventListener('mouseenter',()=>{ if(ar)ar.style.transform=a.getAttribute('data-cursor')==='open'?'translate(4px,-4px)':'translateX(5px)'; }); a.addEventListener('mouseleave',()=>{ if(ar)ar.style.transform='none'; }); });
+
+    // ---------- SKETCH ENGINE (ink on bone) ----------
+    const makeSketch=(canvas,kind,word)=>{
+      const ctx=canvas.getContext('2d');
+      const PAPER='#efece6';
+      let W=1,H=1,dpr=1,raf=0,t=0,running=false;
+      const m={ x:-1, y:-1, on:false };
+      let st=null;
+      const clearAll=()=>{ ctx.fillStyle=PAPER; ctx.fillRect(0,0,W,H); };
+      const fade=(a)=>{ ctx.fillStyle=`rgba(239,236,230,${a})`; ctx.fillRect(0,0,W,H); };
+      const init=()=>{
+        if(kind==='flow'){ const n=Math.round(clamp(W*H/1700,160,560)); st={ p:Array.from({length:n},()=>({ x:Math.random()*W, y:Math.random()*H, life:Math.random()*140 })) }; clearAll(); }
+        else if(kind==='constellation'){ const n=Math.round(clamp(W/9,18,48)); st={ pts:Array.from({length:n},()=>({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.42, vy:(Math.random()-.5)*.42 })) }; clearAll(); }
+        else if(kind==='phyllotaxis'){ st={ n:0, max:Math.round(clamp(W*H/130,260,1000)) }; clearAll(); }
+        else if(kind==='lissajous'){ st={ a:3, b:2, ph:Math.random()*TAU }; clearAll(); }
+        else if(kind==='sinetype'){ st={ word:((word||'oblique')+'   ') }; clearAll(); }
+        else if(kind==='orbit'){ st={ n:14 }; clearAll(); }
+        else st={};
+      };
+      const draw=()=>{
+        t++;
+        if(kind==='flow'){
+          fade(0.06);
+          ctx.lineWidth=1; ctx.strokeStyle='rgba(10,10,10,.34)';
+          for(const p of st.p){
+            const a=(Math.sin(p.x*0.012+t*0.004)+Math.cos(p.y*0.013-t*0.0032))*Math.PI;
+            let nx=p.x+Math.cos(a)*1.35, ny=p.y+Math.sin(a)*1.35;
+            if(m.on){ const dx=p.x-m.x, dy=p.y-m.y, d=Math.hypot(dx,dy); if(d<95){ nx+=dx/(d||1)*1.5; ny+=dy/(d||1)*1.5; } }
+            ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(nx,ny); ctx.stroke();
+            p.x=nx; p.y=ny; p.life--;
+            if(p.life<0||nx<-2||nx>W+2||ny<-2||ny>H+2){ p.x=Math.random()*W; p.y=Math.random()*H; p.life=80+Math.random()*140; }
+          }
+        } else if(kind==='constellation'){
+          clearAll();
+          const pts=st.pts, th=clamp(W/5,80,150);
+          for(const p of pts){ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1; }
+          ctx.lineWidth=1;
+          for(let i=0;i<pts.length;i++){ for(let j=i+1;j<pts.length;j++){ const a=pts[i], b=pts[j], d=Math.hypot(a.x-b.x,a.y-b.y); if(d<th){ ctx.strokeStyle=`rgba(10,10,10,${0.16*(1-d/th)})`; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); } } }
+          if(m.on){ const tr=th*1.5; for(const p of pts){ const d=Math.hypot(p.x-m.x,p.y-m.y); if(d<tr){ ctx.strokeStyle=`rgba(10,10,10,${0.5*(1-d/tr)})`; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(m.x,m.y); ctx.stroke(); } } ctx.fillStyle='#0a0a0a'; ctx.beginPath(); ctx.arc(m.x,m.y,2.6,0,TAU); ctx.fill(); }
+          ctx.fillStyle='#0a0a0a'; for(const p of pts){ ctx.beginPath(); ctx.arc(p.x,p.y,1.7,0,TAU); ctx.fill(); }
+        } else if(kind==='phyllotaxis'){
+          if(st.n>=st.max){ fade(0.05); if(st.n>=st.max+80){ clearAll(); st.n=0; } else { st.n++; } return; }
+          const c=clamp(Math.min(W,H)/26,5,12), cx=W/2, cy=H/2, ga=137.507*Math.PI/180, lim=Math.min(W,H)/1.7;
+          for(let k=0;k<3 && st.n<st.max;k++){ const i=st.n++; const a=i*ga, r=c*Math.sqrt(i); const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r; ctx.fillStyle=`rgba(10,10,10,${clamp(1-r/lim,0.12,0.72)})`; ctx.beginPath(); ctx.arc(x,y,clamp(r/W*4,0.6,2.8),0,TAU); ctx.fill(); }
+        } else if(kind==='lissajous'){
+          fade(0.05);
+          const cx=W/2, cy=H/2, R=Math.min(W,H)*0.38; st.ph+=0.0035;
+          ctx.strokeStyle='rgba(10,10,10,.5)'; ctx.lineWidth=0.9; ctx.beginPath();
+          const N=400; for(let k=0;k<=N;k++){ const u=k/N*TAU; const x=cx+R*Math.sin(st.a*u+st.ph); const y=cy+R*Math.sin(st.b*u); k?ctx.lineTo(x,y):ctx.moveTo(x,y); } ctx.stroke();
+        } else if(kind==='sinetype'){
+          clearAll();
+          const size=clamp(Math.min(W,H)*0.2,26,80); ctx.fillStyle='#0a0a0a'; ctx.textBaseline='middle'; ctx.font=`italic ${size}px 'Instrument Serif', serif`;
+          const amp=H*0.15, k=4/W; let x=-((t*0.7)%(size*4))-size*2;
+          while(x<W+size){ for(const ch of st.word){ const ph=x*k*Math.PI+t*0.03; const y=H/2+Math.sin(ph)*amp; ctx.save(); ctx.translate(x,y); ctx.rotate(Math.cos(ph)*0.16); ctx.fillText(ch,0,0); ctx.restore(); x+=ctx.measureText(ch).width; } }
+        } else if(kind==='orbit'){
+          clearAll();
+          const cx=W/2, cy=H/2, R=Math.min(W,H)*0.36, rot=t*0.004, N=st.n;
+          ctx.strokeStyle='rgba(10,10,10,.16)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(cx,cy,R,0,TAU); ctx.stroke();
+          const pos=[]; for(let i=0;i<N;i++){ const a=rot+i/N*TAU; pos.push([cx+Math.cos(a)*R, cy+Math.sin(a)*R]); }
+          ctx.strokeStyle='rgba(10,10,10,.2)'; ctx.lineWidth=0.9;
+          for(let i=0;i<N;i++){ const j=(i+3+(i%4))%N; ctx.beginPath(); ctx.moveTo(pos[i][0],pos[i][1]); ctx.lineTo(pos[j][0],pos[j][1]); ctx.stroke(); }
+          ctx.fillStyle='#0a0a0a'; pos.forEach(p=>{ ctx.beginPath(); ctx.arc(p[0],p[1],1.8,0,TAU); ctx.fill(); });
+          const pk=Math.floor((t*0.05)%N), pp=pos[pk]; ctx.beginPath(); ctx.arc(pp[0],pp[1],3.6,0,TAU); ctx.fill(); ctx.strokeStyle='rgba(10,10,10,.32)'; ctx.beginPath(); ctx.arc(pp[0],pp[1],6+((t%34)/34)*7,0,TAU); ctx.stroke();
+        }
+      };
+      const frame=()=>{ raf=requestAnimationFrame(frame); draw(); };
+      return {
+        el:canvas, want:false,
+        resize(){ const r=canvas.getBoundingClientRect(); if(r.width<2||r.height<2) return; W=Math.round(r.width); H=Math.round(r.height); dpr=Math.min(devicePixelRatio||1,2); canvas.width=W*dpr; canvas.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); init(); },
+        start(){ if(running)return; running=true; raf=requestAnimationFrame(frame); },
+        stop(){ running=false; cancelAnimationFrame(raf); },
+        still(){ for(let i=0;i<160;i++) draw(); },
+        move(x,y,on){ m.x=x; m.y=y; m.on=on; },
+      };
+    };
+
+    const sketches=$$('[data-sketch]').map(cv=>{ const s=makeSketch(cv,cv.getAttribute('data-kind'),cv.getAttribute('data-word')); cv.__sk=s; return s; });
+    sketches.forEach(s=>s.resize());
+
+    const liveEls=$$('[data-live-count]');
+    let liveN=0;
+    const setLive=()=>{ const v=String(liveN).padStart(2,'0'); liveEls.forEach(el=>el.textContent=v); };
+    setLive();
+
+    if(reduce){ sketches.forEach(s=>{ try{ s.still(); }catch(e){} }); }
+    else {
+      const sio=new IntersectionObserver((es)=>{ es.forEach(en=>{ const s=en.target.__sk; if(!s)return; s.want=en.isIntersecting; if(en.isIntersecting){ if(!document.hidden) s.start(); } else s.stop(); }); liveN=sketches.filter(s=>s.want).length; setLive(); },{ threshold:0.04 });
+      sketches.forEach(s=>sio.observe(s.el));
+      document.addEventListener('visibilitychange',()=>{ if(document.hidden){ sketches.forEach(s=>s.stop()); } else { sketches.forEach(s=>{ if(s.want) s.start(); }); } });
+    }
+
+    let rzt; addEventListener('resize',()=>{ clearTimeout(rzt); rzt=setTimeout(()=>sketches.forEach(s=>s.resize()),180); });
+
+    $$('[data-sketch-wrap]').forEach(w=>{
+      const ol=w.querySelector('[data-open]'); const cv=w.querySelector('[data-sketch]');
+      w.addEventListener('mouseenter',()=>{ if(ol)ol.style.opacity='1'; });
+      w.addEventListener('mouseleave',()=>{ if(ol)ol.style.opacity='0'; if(cv&&cv.__sk)cv.__sk.move(-1,-1,false); });
+      if(cv&&cv.__sk){ w.addEventListener('mousemove',(ev)=>{ const b=cv.getBoundingClientRect(); cv.__sk.move(ev.clientX-b.left, ev.clientY-b.top, true); }); }
+    });
+
+    // ---------- RAIL (sticky index) ----------
+    const railItems=$$('[data-railitem]');
+    const sections=$$('[data-section]');
+    const counter=$('[data-counter]');
+    const progress=$('[data-progress]');
+    let activeIdx=-1;
+    const setActive=(i)=>{ if(i===activeIdx)return; activeIdx=i; railItems.forEach((it,k)=>{ const on=k===i; it.style.opacity=on?'1':'.36'; const mk=it.querySelector('[data-rail-mark]'); const ti=it.querySelector('[data-rail-title]'); if(mk)mk.style.width=on?'26px':'0'; if(ti)ti.style.fontStyle=on?'italic':'normal'; }); if(counter)counter.textContent=String(i+1).padStart(2,'0'); };
+    railItems.forEach(it=>it.addEventListener('click',(e)=>{ e.preventDefault(); const i=+it.getAttribute('data-i'); const tgt=sections[i]; if(!tgt)return; if(lenis)lenis.scrollTo(tgt,{ duration:1.1 }); else window.scrollTo(0, tgt.getBoundingClientRect().top+(scrollY||0)); }));
+
+    const tick=(t)=>{ this._raf=requestAnimationFrame(tick);
+      if(lenis)lenis.raf(t);
+      cur.rx+=(cur.x-cur.rx)*0.18; cur.ry+=(cur.y-cur.ry)*0.18; ring.style.transform=`translate(${cur.rx}px,${cur.ry}px) translate(-50%,-50%)`;
+      if(sections.length){ const line=innerHeight*0.42; let best=0, bd=1e9; sections.forEach((s,i)=>{ const b=s.getBoundingClientRect(); const mid=b.top+b.height/2; const d=Math.abs(mid-line); if(d<bd){ bd=d; best=i; } }); setActive(best); }
+      if(progress){ const dh=document.documentElement.scrollHeight-innerHeight; const sp=dh>0?clamp((scrollY||document.documentElement.scrollTop)/dh,0,1):0; progress.style.height=(sp*100)+'%'; }
+    };
+    this._raf=requestAnimationFrame(tick);
+
+    this._cleanup=()=>{ cancelAnimationFrame(this._raf); sketches.forEach(s=>s.stop()); lenis&&lenis.destroy(); };
+  }
+
+  componentDidMount(){ const b=()=>this.boot(); requestAnimationFrame(b); setTimeout(b,180); }
+
+  componentWillUnmount(){ this._cleanup&&this._cleanup(); }
+}
+</script>
+</body>
+</html>

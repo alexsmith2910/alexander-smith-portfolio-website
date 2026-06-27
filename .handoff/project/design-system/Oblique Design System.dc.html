@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Space+Grotesk:wght@400;500;600&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#e8e6e1;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  ::selection{background:#0a0a0a;color:#e8e6e1}
+</style>
+</helmet>
+
+<div style="position:relative;width:100%;background:#e8e6e1;color:#0a0a0a;font-family:'Space Grotesk',sans-serif;overflow-x:hidden">
+
+  <!-- ============ COVER ============ -->
+  <header style="min-height:92vh;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(28px,5vw,64px)">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase">
+      <span style="display:flex;gap:14px;align-items:center"><span style="width:34px;height:1px;background:#0a0a0a;display:inline-block"></span>Design System</span>
+      <span style="opacity:.5">v1.0 — 2026</span>
+    </div>
+    <div>
+      <div style="overflow:hidden;margin-bottom:18px"><div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.34em;text-transform:uppercase;opacity:.55">Oblique — Design &amp; technology studio</div></div>
+      <h1 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(56px,12vw,200px);line-height:.92;letter-spacing:-.03em">The system<br>behind the <span style="font-style:italic">worlds.</span></h1>
+      <p style="margin-top:clamp(24px,4vh,40px);max-width:54ch;font-size:clamp(14px,1.4vw,18px);line-height:1.55;opacity:.72">A reference for everything that makes Oblique feel like Oblique — colour, type, motion and the components that carry them. Use it to plan and build the rest of the site without re-deriving a single decision.</p>
+    </div>
+    <div style="display:flex;gap:clamp(20px,4vw,60px);flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.5">
+      <span>01 — Foundations</span><span>02 — Type</span><span>03 — Components</span><span>04 — Motion</span><span>05 — Voice</span>
+    </div>
+  </header>
+
+  <!-- ============ 01 FOUNDATIONS / COLOR ============ -->
+  <section style="padding:clamp(60px,10vh,140px) clamp(28px,5vw,64px);border-top:1px solid rgba(10,10,10,.16)">
+    <div style="display:flex;gap:18px;align-items:baseline;margin-bottom:clamp(40px,6vh,70px)">
+      <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.3em;opacity:.45">01</span>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(34px,5.5vw,80px);line-height:1;letter-spacing:-.02em">Colour</h2>
+    </div>
+    <p style="max-width:56ch;font-size:clamp(14px,1.3vw,17px);line-height:1.6;opacity:.7;margin-bottom:clamp(40px,6vh,64px)">A near-monochrome system. Warm bone paper against soft ink, with a single near-black for immersive dark zones. The only colour lives in the WebGL plasma — a cold violet glow that surfaces during the menu takeover and footer dimming. Never introduce saturated UI colour.</p>
+
+    <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:26px;border-bottom:1px solid rgba(10,10,10,.14);padding-bottom:14px">Core surfaces</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:rgba(10,10,10,.14);border:1px solid rgba(10,10,10,.14);margin-bottom:clamp(50px,8vh,90px)">
+      <sc-for list="{{ swatches }}" as="s" hint-placeholder-count="6">
+        <div style="background:#e8e6e1;padding:0">
+          <div style="height:148px;background:{{ s.hex }};border-bottom:1px solid rgba(10,10,10,.08)"></div>
+          <div style="padding:18px 20px 22px">
+            <div style="font-family:'Instrument Serif',serif;font-size:22px;font-style:italic">{{ s.name }}</div>
+            <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.08em;opacity:.55;margin-top:8px">{{ s.hex }}</div>
+            <div style="font-size:13px;line-height:1.45;opacity:.6;margin-top:12px">{{ s.use }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:26px;border-bottom:1px solid rgba(10,10,10,.14);padding-bottom:14px">Ink opacities — the real palette</div>
+    <p style="max-width:52ch;font-size:14px;line-height:1.6;opacity:.65;margin-bottom:30px">Hierarchy is built almost entirely from ink-on-bone at set opacities rather than new colours. Memorise these five steps.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:14px">
+      <sc-for list="{{ inks }}" as="i" hint-placeholder-count="5">
+        <div style="flex:1 1 150px;min-width:150px;border:1px solid rgba(10,10,10,.14)">
+          <div style="height:64px;background:#e8e6e1;position:relative"><div style="position:absolute;inset:0;background:#0a0a0a;opacity:{{ i.o }}"></div></div>
+          <div style="padding:12px 14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em"><span style="opacity:.9">{{ i.label }}</span><br><span style="opacity:.5">{{ i.role }}</span></div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ 02 TYPE ============ -->
+  <section style="padding:clamp(60px,10vh,140px) clamp(28px,5vw,64px);border-top:1px solid rgba(10,10,10,.16)">
+    <div style="display:flex;gap:18px;align-items:baseline;margin-bottom:clamp(40px,6vh,70px)">
+      <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.3em;opacity:.45">02</span>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(34px,5.5vw,80px);line-height:1;letter-spacing:-.02em">Type</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:rgba(10,10,10,.14);border:1px solid rgba(10,10,10,.14);margin-bottom:clamp(50px,8vh,90px)">
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px)">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5;margin-bottom:20px">Display</div>
+        <div style="font-family:'Instrument Serif',serif;font-size:clamp(54px,7vw,96px);line-height:.95;letter-spacing:-.025em">Aa <span style="font-style:italic">Aa</span></div>
+        <div style="font-family:'Instrument Serif',serif;font-size:22px;margin-top:20px">Instrument Serif</div>
+        <div style="font-size:13px;line-height:1.55;opacity:.62;margin-top:12px">Headlines, project titles, oversized statements. Use roman by default and <span style="font-family:'Instrument Serif',serif;font-style:italic">italic</span> for the emphasised final clause. Tight tracking (-.02 to -.03em), line-height .92–1.</div>
+      </div>
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px)">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5;margin-bottom:20px">Body</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(54px,7vw,96px);line-height:.95">Aa</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:22px;margin-top:20px;font-weight:500">Space Grotesk</div>
+        <div style="font-size:13px;line-height:1.55;opacity:.62;margin-top:12px">Paragraphs, descriptions, UI copy. Weights 400 / 500 / 600. Line-height 1.5–1.6, never set above 18px for running text.</div>
+      </div>
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px)">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5;margin-bottom:20px">Label</div>
+        <div style="font-family:'Space Mono',monospace;font-size:clamp(40px,5vw,72px);line-height:.95">Aa</div>
+        <div style="font-family:'Space Mono',monospace;font-size:20px;margin-top:24px">Space Mono</div>
+        <div style="font-size:13px;line-height:1.55;opacity:.62;margin-top:12px">Kickers, meta, coordinates, filenames, nav micro-labels. ALWAYS uppercase with wide tracking (.14–.34em). Small — 11–12px.</div>
+      </div>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:30px;border-bottom:1px solid rgba(10,10,10,.14);padding-bottom:14px">Scale &amp; usage</div>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ typescale }}" as="t" hint-placeholder-count="6">
+        <div style="display:flex;gap:clamp(20px,4vw,60px);align-items:baseline;flex-wrap:wrap;padding:clamp(18px,2.6vh,30px) 0;border-bottom:1px solid rgba(10,10,10,.12)">
+          <div style="flex:0 0 140px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.5">{{ t.role }}</div>
+          <div style="flex:1 1 320px;font-family:{{ t.family }};font-size:{{ t.px }};line-height:1;letter-spacing:{{ t.ls }};font-style:{{ t.style }}">{{ t.sample }}</div>
+          <div style="flex:0 0 auto;font-family:'Space Mono',monospace;font-size:11px;opacity:.45;text-align:right">{{ t.spec }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ 03 COMPONENTS ============ -->
+  <section style="padding:clamp(60px,10vh,140px) clamp(28px,5vw,64px);border-top:1px solid rgba(10,10,10,.16)">
+    <div style="display:flex;gap:18px;align-items:baseline;margin-bottom:clamp(40px,6vh,70px)">
+      <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.3em;opacity:.45">03</span>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(34px,5.5vw,80px);line-height:1;letter-spacing:-.02em">Components</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:rgba(10,10,10,.14);border:1px solid rgba(10,10,10,.14)">
+
+      <!-- Kicker -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Kicker / eyebrow</div>
+        <div style="display:flex;flex:1;align-items:center">
+          <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.34em;text-transform:uppercase;display:flex;gap:16px;align-items:center"><span style="width:36px;height:1px;background:#0a0a0a;display:inline-block"></span>Selected work</div>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Mono, .34em tracking, leading 36px hairline rule. Opens every section.</div>
+      </div>
+
+      <!-- Button -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Text button</div>
+        <div style="display:flex;flex:1;align-items:center">
+          <span data-demo-btn="" style="position:relative;display:inline-flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding-bottom:8px;cursor:pointer">View project<span data-demo-arrow="" style="display:inline-block;transition:transform .4s cubic-bezier(.22,1,.36,1)">→</span><span style="position:absolute;left:0;right:0;bottom:0;height:1px;background:#0a0a0a"></span></span>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Underline always present; on hover the rule redraws left→right and the arrow nudges +6px. Magnetic to the cursor.</div>
+      </div>
+
+      <!-- Menu icon -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Menu trigger</div>
+        <div style="display:flex;flex:1;align-items:center;gap:14px">
+          <span style="position:relative;width:26px;height:12px;display:inline-block"><i style="position:absolute;right:0;top:2px;width:26px;height:2px;background:#0a0a0a"></i><i style="position:absolute;right:0;bottom:2px;width:18px;height:2px;background:#0a0a0a"></i></span>
+          <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:700">Menu</span>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Two right-aligned bars (26 / 18px). Hover equalises width; open crosses into an X.</div>
+      </div>
+
+      <!-- Media card -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Media placeholder</div>
+        <div style="flex:1;min-height:120px;position:relative;overflow:hidden;background:#efece6;border:1px solid rgba(10,10,10,.08)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(118deg,#c4c0b6,#c4c0b6 9px,#cbc8bf 9px,#cbc8bf 18px)"></div>
+          <span style="position:absolute;left:14px;bottom:10px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;color:#6b675e">[ project.mp4 — replace ]</span>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Striped placeholder on bone, mono caption naming the asset to drop in. 3D tilt + liquid distortion on hover.</div>
+      </div>
+
+      <!-- Cursor -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Custom cursor</div>
+        <div style="display:flex;flex:1;align-items:center;gap:22px">
+          <span style="width:38px;height:38px;border:1px solid rgba(10,10,10,.6);border-radius:50%;display:flex;align-items:center;justify-content:center"><span style="width:6px;height:6px;background:#0a0a0a;border-radius:50%"></span></span>
+          <span style="width:66px;height:66px;border-radius:50%;background:rgba(10,10,10,.06);display:flex;align-items:center;justify-content:center"><span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.7">View</span></span>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Trailing ring (lerped) + instant dot, difference-blended. Grows to 66px with a contextual label on interactive targets.</div>
+      </div>
+
+      <!-- Form field -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Form field</div>
+        <div style="display:flex;flex:1;align-items:center">
+          <div style="width:100%">
+            <label style="display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5;margin-bottom:12px">01 — Your name</label>
+            <div data-ds-field="" style="position:relative">
+              <input type="text" placeholder="Jane Mercer" style="width:100%;background:none;border:none;outline:none;font-family:'Instrument Serif',serif;font-size:clamp(22px,2.6vw,30px);padding:0 0 10px;color:#0a0a0a">
+              <span style="position:absolute;left:0;right:0;bottom:0;height:1px;background:#0a0a0a;opacity:.18"></span>
+              <span data-ds-fa="" style="position:absolute;left:0;bottom:0;height:1px;width:100%;background:#0a0a0a;transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.22,1,.36,1)"></span>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Serif input on bone, no box — only a hairline rule. On focus a solid rule draws left→right; mono numbered label above. Placeholder at 32% ink.</div>
+      </div>
+
+      <!-- Selection chip -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Selection chip</div>
+        <div style="display:flex;flex:1;align-items:center">
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <button type="button" data-ds-chip="" style="background:#0a0a0a;color:#e8e6e1;border:1px solid #0a0a0a;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:11px 16px;border-radius:100px;transition:background .35s,color .35s,border-color .35s">Brand world</button>
+            <button type="button" data-ds-chip="" style="background:none;color:#0a0a0a;border:1px solid rgba(10,10,10,.22);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:11px 16px;border-radius:100px;transition:background .35s,color .35s,border-color .35s">Launch</button>
+            <button type="button" data-ds-chip="" style="background:none;color:#0a0a0a;border:1px solid rgba(10,10,10,.22);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:11px 16px;border-radius:100px;transition:background .35s,color .35s,border-color .35s">Installation</button>
+          </div>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Mono pill, hairline outline at rest, inverts to solid ink when selected. Single-select for project type. Click to toggle.</div>
+      </div>
+
+      <!-- List row -->
+      <div style="background:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">List row</div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+          <div style="display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid rgba(10,10,10,.12);padding:14px 0;font-size:15px"><span>Instagram</span><span style="opacity:.45;font-family:'Space Mono',monospace;font-size:12px">@oblique.studio</span></div>
+          <div style="display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid rgba(10,10,10,.12);padding:14px 0;font-size:15px"><span>Awwwards — SOTD ×4</span><span style="opacity:.45;font-family:'Space Mono',monospace;font-size:12px">2025</span></div>
+          <div style="display:flex;justify-content:space-between;gap:20px;padding:14px 0;font-size:15px"><span>Are.na</span><span style="opacity:.45;font-family:'Space Mono',monospace;font-size:12px">oblique</span></div>
+        </div>
+        <div style="font-size:12px;line-height:1.5;opacity:.6">Label left, mono value right at 45% ink, separated by 12%-ink hairlines. Carries socials, recognition and contact metadata.</div>
+      </div>
+
+      <!-- Dark zone -->
+      <div style="background:#060606;color:#e8e6e1;padding:clamp(28px,3vw,40px);display:flex;flex-direction:column;gap:26px;min-height:240px">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;opacity:.5">Dark zone</div>
+        <div style="flex:1;display:flex;align-items:center"><span style="font-family:'Instrument Serif',serif;font-size:clamp(30px,4vw,48px);font-style:italic;line-height:.95">Let's build<br>something.</span></div>
+        <div style="font-size:12px;line-height:1.5;opacity:.55">Footer &amp; CTA invert to near-black. The page transitions into it continuously on scroll — colour is interpolated, never switched.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ 04 MOTION ============ -->
+  <section style="padding:clamp(60px,10vh,140px) clamp(28px,5vw,64px);border-top:1px solid rgba(10,10,10,.16)">
+    <div style="display:flex;gap:18px;align-items:baseline;margin-bottom:clamp(40px,6vh,70px)">
+      <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.3em;opacity:.45">04</span>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(34px,5.5vw,80px);line-height:1;letter-spacing:-.02em">Motion</h2>
+    </div>
+    <p style="max-width:56ch;font-size:clamp(14px,1.3vw,17px);line-height:1.6;opacity:.7;margin-bottom:clamp(40px,6vh,64px)">Movement is slow, weighted and continuous. Nothing snaps. Smooth-scroll (Lenis) underpins everything; reveals are lerped to scroll position rather than triggered. Always honour <span style="font-family:'Space Mono',monospace;font-size:.9em">prefers-reduced-motion</span> with instant fallbacks.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;background:rgba(10,10,10,.14);border:1px solid rgba(10,10,10,.14)">
+      <sc-for list="{{ motion }}" as="m" hint-placeholder-count="5">
+        <div style="background:#e8e6e1;padding:clamp(26px,3vw,38px);min-height:200px;display:flex;flex-direction:column;gap:18px">
+          <div style="font-family:'Instrument Serif',serif;font-size:clamp(24px,2.6vw,34px);letter-spacing:-.015em">{{ m.name }}</div>
+          <div style="font-size:13px;line-height:1.6;opacity:.66;flex:1">{{ m.desc }}</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;opacity:.5;border-top:1px solid rgba(10,10,10,.12);padding-top:14px">{{ m.spec }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ============ 05 VOICE ============ -->
+  <section style="padding:clamp(60px,10vh,140px) clamp(28px,5vw,64px);border-top:1px solid rgba(10,10,10,.16)">
+    <div style="display:flex;gap:18px;align-items:baseline;margin-bottom:clamp(40px,6vh,70px)">
+      <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.3em;opacity:.45">05</span>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(34px,5.5vw,80px);line-height:1;letter-spacing:-.02em">Voice</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(30px,5vw,70px)">
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:24px">Principles</div>
+        <ul style="list-style:none;font-family:'Instrument Serif',serif;font-size:clamp(22px,2.4vw,32px);line-height:1.55">
+          <li>Confident, never loud.</li><li>Short declaratives.</li><li>Concrete over abstract.</li><li>The browser is a medium.</li><li>Atmosphere, not interface.</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:24px">In practice</div>
+        <div style="font-size:15px;line-height:1.7;opacity:.72">Headlines pose a feeling or a question, then land on an italic clause — <span style="font-family:'Instrument Serif',serif;font-style:italic">“…at the edge of the web.”</span> Project meta reads like a file system: numbered, mono, lowercase slugs. Coordinates and build credits sign every footer. Replaceable asset slots are always labelled in brackets.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer style="background:#060606;color:#e8e6e1;padding:clamp(50px,8vh,90px) clamp(28px,5vw,64px);display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85">
+    <span>Oblique — Design System v1.0</span>
+    <span>48.8566°N · 2.3522°E</span>
+    <span>Built in WebGL</span>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  componentDidMount(){
+    const root = this.root || document;
+    // text-button hover demo
+    const btn = root.querySelector('[data-demo-btn]');
+    if(btn){
+      const ar = btn.querySelector('[data-demo-arrow]');
+      btn.addEventListener('mouseenter', ()=>{ if(ar) ar.style.transform='translateX(6px)'; });
+      btn.addEventListener('mouseleave', ()=>{ if(ar) ar.style.transform='translateX(0)'; });
+    }
+    // form-field focus underline demo
+    root.querySelectorAll('[data-ds-field]').forEach(f=>{
+      const inp=f.querySelector('input'), fa=f.querySelector('[data-ds-fa]');
+      if(!inp||!fa) return;
+      inp.addEventListener('focus', ()=>{ fa.style.transformOrigin='left'; fa.style.transform='scaleX(1)'; });
+      inp.addEventListener('blur', ()=>{ if(!inp.value){ fa.style.transformOrigin='right'; fa.style.transform='scaleX(0)'; } });
+    });
+    // selection-chip single-select demo
+    const chips=Array.from(root.querySelectorAll('[data-ds-chip]'));
+    let chosen=chips.find(c=>c.style.background && c.style.background!=='none')||null;
+    chips.forEach(c=>{
+      c.addEventListener('click', ()=>{
+        const on=c!==chosen;
+        chips.forEach(o=>{ o.style.background='none'; o.style.color='#0a0a0a'; o.style.borderColor='rgba(10,10,10,.22)'; });
+        if(on){ c.style.background='#0a0a0a'; c.style.color='#e8e6e1'; c.style.borderColor='#0a0a0a'; chosen=c; } else chosen=null;
+      });
+    });
+  }
+  set root(el){ this._root = el; }
+  get root(){ return this._root; }
+  renderVals(){
+    return {
+      r: (el)=>{ this._root = el; },
+      swatches: [
+        { name:'Bone',        hex:'#e8e6e1', use:'Primary surface. Every light view sits on this warm paper.' },
+        { name:'Ink',         hex:'#0a0a0a', use:'Primary text & lines on bone. Soft black, not pure #000.' },
+        { name:'Void',        hex:'#060606', use:'Dark-zone surface — footer, CTA, menu takeover.' },
+        { name:'Paper light',  hex:'#efece6', use:'Raised media surface, one step above bone.' },
+        { name:'Stone',       hex:'#cfccc4', use:'Empty media wells & inactive placeholders.' },
+        { name:'Plasma glow', hex:'#1a1730', use:'The only colour — cold violet, WebGL-only, ramps from void.' },
+      ],
+      inks: [
+        { o:'1',   label:'100%', role:'Headlines' },
+        { o:'0.72',label:'72%',  role:'Body copy' },
+        { o:'0.5', label:'50%',  role:'Meta / labels' },
+        { o:'0.16',label:'16%',  role:'Hairline rules' },
+        { o:'0.08',label:'8%',   role:'Fills / wells' },
+      ],
+      typescale: [
+        { role:'Hero',      family:"'Instrument Serif',serif", px:'clamp(40px,7vw,92px)', ls:'-.025em', style:'normal', sample:'Immersive worlds', spec:'Instrument · -.025em' },
+        { role:'Section H2',family:"'Instrument Serif',serif", px:'clamp(34px,5vw,64px)', ls:'-.02em',  style:'normal', sample:'Selected work', spec:'Instrument · -.02em' },
+        { role:'Project H3',family:"'Instrument Serif',serif", px:'clamp(28px,3.4vw,44px)',ls:'-.02em', style:'italic', sample:'Aurora Systems', spec:'Instrument italic' },
+        { role:'Lead',      family:"'Instrument Serif',serif", px:'clamp(22px,2.4vw,30px)',ls:'-.01em', style:'normal', sample:'what should this feel like?', spec:'Instrument · lead' },
+        { role:'Body',      family:"'Space Grotesk',sans-serif",px:'17px',                 ls:'0',       style:'normal', sample:'Real-time 3D, rendered live.', spec:'Grotesk 400 · 1.55' },
+        { role:'Label',     family:"'Space Mono',monospace",   px:'12px',                  ls:'.3em',    style:'normal', sample:'01 / WEBGL BRAND WORLD', spec:'Mono · uppercase' },
+      ],
+      motion: [
+        { name:'Signature ease',   desc:'The house curve for almost every transition — entrances, underlines, tilts, clip reveals.', spec:'cubic-bezier(.22, 1, .36, 1)' },
+        { name:'Masked text reveal',desc:'Lines sit in overflow-hidden wells and slide up from translateY(115%), staggered.', spec:'stagger .12s · power4.out' },
+        { name:'Scroll-linked fade',desc:'Sections lerp opacity & y toward a target derived from viewport position — buttery, never abrupt.', spec:'lerp factor 0.085' },
+        { name:'Ink page transition',desc:'A near-black panel wipes up to cover, swaps the view, then wipes away — between Work & About.', spec:'clip-path inset · .6s' },
+        { name:'Dark-zone dissolve',desc:'Background, text & 3D recolour continuously toward void as the footer enters — interpolated, not toggled.', spec:'darkFactor 0→1 · lerp' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
