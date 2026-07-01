@@ -99,6 +99,46 @@ void main(){
 }
 `;
 
+/**
+ * Cinematic composite for the clay scene. The clay is rendered to a target, then
+ * drawn to screen through this — adding edge-weighted chromatic aberration and a
+ * high-threshold halation (only the brightest specular peaks bloom, so the near-
+ * white bone palette never blows out). Alpha is preserved from the source so the
+ * transparent background stays transparent (composites over the page). Whisper-subtle.
+ */
+export const POST_FRAG = /* glsl */ `
+precision highp float;
+varying vec2 vUv;
+uniform sampler2D uTex;
+uniform vec2 uTexel;     // 1.0 / drawingBufferSize
+uniform float uCA;       // chromatic aberration amount (≈ px at the corners)
+uniform float uGlow;     // halation strength
+uniform float uThresh;   // luminance threshold — only peaks above this bloom
+float luma(vec3 c){ return dot(c, vec3(0.299, 0.587, 0.114)); }
+void main(){
+  vec2 uv = vUv;
+  vec2 cc = uv - 0.5;
+  float edge = dot(cc, cc);                 // 0 at centre → ~0.5 at corners
+  vec2 off = cc * edge * uCA * uTexel;       // radial, stronger toward the edges
+  // chromatic aberration: split R/B radially, keep G centred
+  float r = texture2D(uTex, uv + off).r;
+  float g = texture2D(uTex, uv).g;
+  float b = texture2D(uTex, uv - off).b;
+  vec4 base = texture2D(uTex, uv);
+  vec3 col = vec3(r, g, b);
+  // luminance-gated halation — 8-tap ring, only the brightest specular contributes
+  vec3 gsum = vec3(0.0);
+  for(int i=0;i<8;i++){
+    float ang = float(i) * 0.7853981634;     // 45° steps
+    vec2 d = vec2(cos(ang), sin(ang)) * uTexel * 3.5;
+    vec4 s = texture2D(uTex, uv + d);
+    gsum += s.rgb * max(luma(s.rgb) - uThresh, 0.0) * s.a;
+  }
+  col += gsum * uGlow;
+  gl_FragColor = vec4(col, base.a);
+}
+`;
+
 /** floating-preview dissolve shader (Work index hover preview) */
 export const DISSOLVE_VERT = /* glsl */ `
 attribute vec2 p;

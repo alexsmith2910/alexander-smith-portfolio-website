@@ -16,6 +16,7 @@ import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { clamp, mixHex } from "@/lib/math";
+import { EASE } from "@/lib/ease";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -34,6 +35,8 @@ export type TickState = {
   mouseEx: number;
   mouseEy: number;
   scroll: number;
+  /** smoothed scroll velocity in px/frame (signed; +down). Drives skew/parallax. */
+  velocity: number;
 };
 type Tick = (s: TickState) => void;
 
@@ -300,19 +303,24 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
       } else if (els.length) {
         revealCtx.current = gsap.context(() => {
           els.forEach((el) => {
-            el.style.willChange = "opacity, transform";
-            gsap.set(el, { opacity: 0, y: 56 });
-            const inn = () => gsap.to(el, { opacity: 1, y: 0, duration: 1, ease: "power3.out", overwrite: true });
-            const out = (dir: number) => gsap.to(el, { opacity: 0, y: 56 * dir, duration: 0.5, ease: "power2.in", overwrite: true });
-            ScrollTrigger.create({
-              trigger: el,
-              start: "top 88%",
-              end: "bottom 6%",
-              onEnter: inn, // scroll down into view
-              onEnterBack: inn, // scroll up back into view
-              onLeave: () => out(-1), // exits past the top
-              onLeaveBack: () => out(1), // exits past the bottom
-            });
+            el.style.willChange = "opacity, transform, clip-path";
+          });
+          gsap.set(els, { opacity: 0, y: 48, scale: 1.03, clipPath: "inset(0 0 14% 0)" });
+          const IN = { opacity: 1, y: 0, scale: 1, clipPath: "inset(0% 0 0% 0)" };
+          // The clip-path is only for the entrance wipe. Once revealed, drop it to `none`
+          // so it stops clipping at the box edge — otherwise magnetic children (TextButton,
+          // PillButton pulled toward the cursor) get sliced off where they cross the reveal
+          // boundary. inset(0%) and none are visually identical, so clearing is seamless.
+          const clearClip = (b: Element[]) => gsap.set(b, { clipPath: "none" });
+          // batched so siblings entering together stagger (the IG cadence), not pop at once
+          ScrollTrigger.batch(els, {
+            start: "top 88%",
+            onEnter: (b) =>
+              gsap.to(b, { ...IN, duration: 1.1, ease: EASE.entrance, stagger: 0.08, overwrite: true, onComplete: () => clearClip(b) }),
+            onEnterBack: (b) =>
+              gsap.to(b, { ...IN, duration: 0.95, ease: EASE.entrance, stagger: 0.06, overwrite: true, onComplete: () => clearClip(b) }),
+            onLeave: (b) => gsap.to(b, { opacity: 0, y: -40, duration: 0.5, ease: "power2.in", overwrite: true }),
+            onLeaveBack: (b) => gsap.to(b, { opacity: 0, y: 40, duration: 0.5, ease: "power2.in", overwrite: true }),
           });
         });
         ScrollTrigger.refresh();
@@ -350,6 +358,8 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let raf = 0;
     let kPaint = -1;
+    let lastScroll = typeof window !== "undefined" ? window.scrollY : 0;
+    let vel = 0;
     const mouse = mouseRef.current;
 
     const darkFactor = () => {
@@ -389,6 +399,8 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
       }
 
       const scroll = window.scrollY || document.documentElement.scrollTop;
+      vel += (scroll - lastScroll - vel) * 0.2; // smoothed px/frame
+      lastScroll = scroll;
       const state: TickState = {
         t,
         dark: k,
@@ -396,6 +408,7 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
         mouseEx: mouse.ex,
         mouseEy: mouse.ey,
         scroll,
+        velocity: vel,
       };
       ticksRef.current.forEach((cb) => cb(state));
     };

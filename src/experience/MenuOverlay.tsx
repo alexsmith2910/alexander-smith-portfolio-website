@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, type CSSProperties } from "react";
-import { useExperience } from "./ExperienceProvider";
+import { useEffect, useRef, type CSSProperties } from "react";
+import { useExperience, useTick } from "./ExperienceProvider";
 import MenuPlasma from "./MenuPlasma";
 import { site } from "@/data/site";
 
@@ -14,6 +14,19 @@ import { site } from "@/data/site";
  */
 export default function MenuOverlay() {
   const { menuOpen, menuContent, closeMenu, navigate, reduced } = useExperience();
+
+  // loading shimmer — shown while the plasma cover is up for a PAGE TRANSITION
+  // (cover substantially closed + not the menu), so a navigation never reads as a
+  // blank screen. Driven by menuReveal from the master tick.
+  const loadRef = useRef<HTMLDivElement | null>(null);
+  const menuContentRef = useRef(menuContent);
+  useEffect(() => { menuContentRef.current = menuContent; }, [menuContent]);
+  useTick((s) => {
+    const el = loadRef.current;
+    if (!el) return;
+    const want = !menuContentRef.current && s.menuReveal > 0.6 ? "1" : "0";
+    if (el.style.opacity !== want) el.style.opacity = want;
+  });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -37,6 +50,26 @@ export default function MenuOverlay() {
     <div data-menu="" className="fixed inset-0 z-[48] overflow-hidden text-bone" style={rootStyle}>
       {/* organic, shader-masked plasma — the cover itself */}
       <MenuPlasma />
+
+      {/* loading shimmer during a page-transition cover (gated via menuReveal in the tick) */}
+      <div
+        ref={loadRef}
+        aria-hidden
+        className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-5"
+        style={{ opacity: 0, transition: reduced ? "none" : "opacity .35s ease" }}
+      >
+        <span className="font-mono text-[11px] uppercase tracking-[.4em] text-bone/75">Loading</span>
+        <span className="relative block h-px w-[160px] overflow-hidden bg-bone/15">
+          <span
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(90deg, transparent, rgba(232,230,225,0.95), transparent)",
+              backgroundSize: "220% 100%",
+              animation: reduced ? "none" : "ob-shimmer 1.2s linear infinite",
+            }}
+          />
+        </span>
+      </div>
 
       <div className="relative h-full flex flex-col justify-center items-center px-gutter py-20" style={contentStyle}>
         <div className="flex flex-col items-center gap-[clamp(4px,1.2vh,16px)]">

@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
+
+// useLayoutEffect on the client (apply the hidden start state before paint), useEffect on
+// the server to avoid React's SSR warning.
+const useIsoLayoutEffect = typeof document !== "undefined" ? useLayoutEffect : useEffect;
 import { useExperience } from "@/experience/ExperienceProvider";
 import Reveal from "@/components/ui/Reveal";
 import Kicker from "@/components/ui/Kicker";
@@ -48,23 +52,26 @@ export default function CaseStudy({ project }: { project: Project }) {
 
   // ---------- hero intro refs ----------
   const backRef = useRef<HTMLAnchorElement | null>(null);
-  const maskRef = useRef<HTMLDivElement | null>(null);
+  const maskRef = useRef<HTMLHeadingElement | null>(null);
   const titleRef = useRef<HTMLSpanElement | null>(null);
   const lineRef = useRef<HTMLDivElement | null>(null);
   const metaRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  useIsoLayoutEffect(() => {
+    const back = backRef.current;
+    const title = titleRef.current;
+    const line = lineRef.current;
+    const meta = metaRef.current;
+    const els = [back, title, line, meta];
+
     const unmask = () => {
       if (maskRef.current) maskRef.current.style.overflow = "visible";
     };
+    // Snap to rest. Clearing the GSAP-owned props (rather than setting raw inline values)
+    // keeps everything on GSAP's own transform channels, so nothing is left half-applied.
     const reveal = () => {
-      if (backRef.current) {
-        backRef.current.style.transform = "none";
-        backRef.current.style.opacity = "1";
-      }
-      if (titleRef.current) titleRef.current.style.transform = "none";
-      if (lineRef.current) lineRef.current.style.opacity = "1";
-      if (metaRef.current) metaRef.current.style.opacity = "1";
+      gsap.killTweensOf(els);
+      gsap.set(els, { clearProps: "transform,opacity" });
       unmask();
     };
 
@@ -73,18 +80,30 @@ export default function CaseStudy({ project }: { project: Project }) {
       return;
     }
 
-    const tl = gsap.timeline();
-    tl.fromTo(backRef.current, { yPercent: 120, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 1.1, ease: "power4.out", delay: 0.15 }, 0);
-    tl.fromTo(titleRef.current, { yPercent: 116 }, { yPercent: 0, duration: 1.2, ease: "power4.out", delay: 0.28 }, 0);
-    tl.fromTo(lineRef.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.1, ease: "power3.out", delay: 0.42 }, 0);
-    tl.fromTo(metaRef.current, { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.out", delay: 0.8 }, 0);
+    // GSAP owns the hidden start state via gsap.set on its OWN yPercent/opacity channels.
+    // This is the crux of the fix: the start state must NOT come from a CSS `transform`
+    // (inline or class). GSAP parses an existing `translateY(116%)` into its *pixel* `y`
+    // channel, then animates `yPercent` 116→0 on a SEPARATE channel — the two add, so the
+    // title settles at 225px + 0% instead of 0, sitting on top of the meta until a timer
+    // force-clears it. Setting yPercent directly keeps one channel, so it lands at rest.
+    // Runs in a layout effect so the hidden state is applied before paint (no flash).
+    gsap.set(back, { yPercent: 120, opacity: 0 });
+    gsap.set(title, { yPercent: 116 });
+    gsap.set(line, { opacity: 0, y: 24 });
+    gsap.set(meta, { opacity: 0 });
 
-    // unmask once the title slide is done so the italic descender is never clipped
-    const unmaskT = window.setTimeout(unmask, 1700);
-    const safety = window.setTimeout(reveal, 2400);
+    const tl = gsap.timeline();
+    tl.to(back, { yPercent: 0, opacity: 1, duration: 1.1, ease: "power4.out", delay: 0.15 }, 0);
+    // unmask only once the title has actually reached rest (GSAP/rAF time, never a
+    // wall-clock timer), so the clip can't lift while the title is still travelling.
+    tl.to(title, { yPercent: 0, duration: 1.2, ease: "power4.out", delay: 0.28, onComplete: unmask }, 0);
+    tl.to(line, { opacity: 1, y: 0, duration: 1.1, ease: "power3.out", delay: 0.42 }, 0);
+    tl.to(meta, { opacity: 1, duration: 1, ease: "power2.out", delay: 0.8 }, 0);
+
+    // Last-resort fallback only if GSAP never finishes; kills tweens before forcing rest.
+    const safety = window.setTimeout(reveal, 6000);
     return () => {
       tl.kill();
-      clearTimeout(unmaskT);
       clearTimeout(safety);
     };
   }, [reduced, project.slug]);
@@ -104,27 +123,27 @@ export default function CaseStudy({ project }: { project: Project }) {
             navigate("/work");
           }}
           className="inline-flex gap-[14px] items-center no-underline text-inherit font-mono text-xs uppercase tracking-[.32em] mb-[clamp(26px,5vh,52px)]"
-          style={{
-            transform: reduced ? "none" : "translateY(120%)",
-            opacity: reduced ? 1 : 0,
-          }}
         >
           <span className="w-[30px] h-px bg-ink inline-block" />
           Case study — {project.no} / {total} · index
         </a>
 
-        <div ref={maskRef} className="pb-[.34em] mb-[-.18em]" style={{ overflow: "hidden" }}>
-          <h1 className="font-serif font-normal text-[clamp(58px,13.5vw,224px)] leading-[0.9] tracking-[-.035em]">
-            <span ref={titleRef} className="block" style={{ transform: reduced ? "none" : "translateY(116%)" }}>
-              <ItalicLastWord title={project.title} />
-            </span>
-          </h1>
-        </div>
+        {/* The h1 is the reveal mask. The inner span carries pb-[0.2em] so its box
+            contains the descender (leading-[0.9] otherwise lets y/g/p fall below the
+            line box and get clipped); the mask grows to fit, and translateY% still
+            hides it at the start. mb pulls the following copy back up to compensate. */}
+        <h1
+          ref={maskRef}
+          className="font-serif font-normal text-[clamp(58px,13.5vw,224px)] leading-[0.9] tracking-[-.035em] overflow-hidden mb-[-0.14em]"
+        >
+          <span ref={titleRef} className="block pb-[0.2em]">
+            <ItalicLastWord title={project.title} />
+          </span>
+        </h1>
 
         <div
           ref={lineRef}
           className="mt-[clamp(20px,3.5vh,38px)] max-w-[48ch] font-serif text-[clamp(22px,3vw,42px)] leading-[1.16] tracking-[-.01em]"
-          style={{ opacity: reduced ? 1 : 0 }}
         >
           {cs ? cs.hero.line : project.desc}
         </div>
@@ -132,7 +151,6 @@ export default function CaseStudy({ project }: { project: Project }) {
         <div
           ref={metaRef}
           className="mt-[clamp(34px,6vh,68px)] flex flex-wrap gap-[clamp(28px,5vw,90px)] border-t border-ink/16 pt-[26px]"
-          style={{ opacity: reduced ? 1 : 0 }}
         >
           {(cs
             ? cs.hero.meta
@@ -494,7 +512,8 @@ function NextProjectFooter({ slug, total }: { slug: string; total: string }) {
     <footer
       id="contact"
       data-darkzone=""
-      className="relative z-[1] text-ink pb-10"
+      // full-viewport dark panel so the previous section can't creep in at the top
+      className="relative z-[1] flex min-h-[100dvh] flex-col justify-end text-ink pb-10"
     >
       <a
         href={`/work/${next.slug}`}

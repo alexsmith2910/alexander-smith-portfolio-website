@@ -100,16 +100,38 @@ export default function ContactPage() {
   const [chosen, setChosen] = useState<string | null>(null);
   const [focusField, setFocusField] = useState<string | null>(null);
   const [status, setStatus] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: wire to an API route / email service (e.g. a Next route handler or form service) for real delivery.
+    if (sending || sent) return;
     if (!email.trim()) {
       setStatus("Add an email so I can reply");
       return;
     }
-    const firstName = name.trim().split(" ")[0];
-    setStatus(`${firstName ? firstName + " — " : ""}sent. I'll be in touch.`);
+    setSending(true);
+    setStatus("Sending…");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, project: chosen, message }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        setStatus(data.error || "Something went wrong — email me directly.");
+        setSending(false);
+        return;
+      }
+      const firstName = name.trim().split(" ")[0];
+      setStatus(`${firstName ? firstName + " — " : ""}sent. I'll be in touch.`);
+      setSent(true);
+    } catch {
+      setStatus("Network error — email me directly.");
+    } finally {
+      setSending(false);
+    }
   };
 
   // ---------- intro masked reveal ----------
@@ -157,12 +179,14 @@ export default function ContactPage() {
 
         <h1 className="font-serif font-normal text-[clamp(54px,12vw,200px)] leading-[0.92] tracking-[-.03em]">
           {["Let's build", "something felt."].map((line, i) => (
-            <span key={i} className="block overflow-hidden pb-[.12em] mb-[-.1em]">
+            // pb on the inner (sliding) span holds the descender (g/y/p) inside the clip;
+            // translateY% is relative to that span, so the taller box still hides at start.
+            <span key={i} className="block overflow-hidden mb-[-.18em]">
               <span
                 ref={(el) => {
                   lineRefs.current[i] = el;
                 }}
-                className={`block ${i === 1 ? "italic" : "not-italic"}`}
+                className={`block pb-[.18em] ${i === 1 ? "italic" : "not-italic"}`}
                 style={{
                   transform: reduced ? "none" : "translateY(115%)",
                 }}
@@ -187,12 +211,17 @@ export default function ContactPage() {
       <main className="relative z-[1] px-gutter pt-[clamp(40px,8vh,90px)] pb-[clamp(100px,18vh,220px)]">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[clamp(40px,7vw,110px)] items-start">
           {/* FORM */}
-          <Reveal as="div">
+          <div>
             <form onSubmit={handleSubmit} className="flex flex-col gap-[clamp(26px,4vh,40px)]">
               {/* 01 — Your name */}
-              <div className="relative">
-                <label htmlFor="cf-name" className="block font-mono text-[11px] uppercase tracking-[.24em] opacity-[.5] mb-[14px]">
-                  01 — Your name
+              <div data-reveal className="relative opacity-0">
+                <label
+                  htmlFor="cf-name"
+                  className={`block font-mono text-[11px] uppercase tracking-[.24em] mb-[14px] transition-[opacity,transform] duration-[400ms] ease-[cubic-bezier(.22,1,.36,1)] ${
+                    focusField === "name" ? "opacity-90 translate-x-1" : "opacity-50"
+                  }`}
+                >
+                  01 — Your name <span className="opacity-60">(optional)</span>
                 </label>
                 <input
                   id="cf-name"
@@ -211,8 +240,13 @@ export default function ContactPage() {
               </div>
 
               {/* 02 — Email */}
-              <div className="relative">
-                <label htmlFor="cf-email" className="block font-mono text-[11px] uppercase tracking-[.24em] opacity-[.5] mb-[14px]">
+              <div data-reveal className="relative opacity-0">
+                <label
+                  htmlFor="cf-email"
+                  className={`block font-mono text-[11px] uppercase tracking-[.24em] mb-[14px] transition-[opacity,transform] duration-[400ms] ease-[cubic-bezier(.22,1,.36,1)] ${
+                    focusField === "email" ? "opacity-90 translate-x-1" : "opacity-50"
+                  }`}
+                >
                   02 — Email
                 </label>
                 <input
@@ -232,8 +266,14 @@ export default function ContactPage() {
               </div>
 
               {/* 03 — What's the project (chips) */}
-              <div className="relative">
-                <label className="block font-mono text-[11px] uppercase tracking-[.24em] opacity-[.5] mb-4">03 — What&apos;s the project</label>
+              <div data-reveal className="relative opacity-0">
+                <label
+                  className={`block font-mono text-[11px] uppercase tracking-[.24em] mb-4 transition-opacity duration-[400ms] ${
+                    chosen ? "opacity-90" : "opacity-50"
+                  }`}
+                >
+                  03 — What&apos;s the project
+                </label>
                 <div className="flex flex-wrap gap-[10px]">
                   {CHIPS.map((c) => {
                     const on = chosen === c;
@@ -243,8 +283,8 @@ export default function ContactPage() {
                         type="button"
                         data-cursor=""
                         onClick={() => setChosen(on ? null : c)}
-                        className={`border cursor-none font-mono text-[11px] tracking-[.12em] uppercase px-4 py-[11px] rounded-full transition-colors duration-[350ms] ${
-                          on ? "bg-ink text-bone border-ink" : "border-ink/22"
+                        className={`border cursor-none font-mono text-[11px] tracking-[.12em] uppercase px-4 py-[11px] rounded-full transition-all duration-[350ms] ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-0.5 ${
+                          on ? "bg-ink text-bone border-ink scale-[1.03]" : "border-ink/22 hover:border-ink/55"
                         }`}
                       >
                         {c}
@@ -255,8 +295,13 @@ export default function ContactPage() {
               </div>
 
               {/* 04 — Tell me more */}
-              <div className="relative">
-                <label htmlFor="cf-message" className="block font-mono text-[11px] uppercase tracking-[.24em] opacity-[.5] mb-[14px]">
+              <div data-reveal className="relative opacity-0">
+                <label
+                  htmlFor="cf-message"
+                  className={`block font-mono text-[11px] uppercase tracking-[.24em] mb-[14px] transition-[opacity,transform] duration-[400ms] ease-[cubic-bezier(.22,1,.36,1)] ${
+                    focusField === "message" ? "opacity-90 translate-x-1" : "opacity-50"
+                  }`}
+                >
                   04 — Tell me more
                 </label>
                 <textarea
@@ -276,8 +321,8 @@ export default function ContactPage() {
               </div>
 
               {/* SUBMIT */}
-              <div className="flex items-center gap-6 flex-wrap mt-[6px]">
-                <SubmitButton>Send enquiry</SubmitButton>
+              <div data-reveal className="flex items-center gap-6 flex-wrap mt-[6px] opacity-0">
+                <SubmitButton>{sent ? "Sent ✓" : sending ? "Sending…" : "Send enquiry"}</SubmitButton>
                 <span
                   aria-live="polite"
                   className={`font-mono text-[11px] tracking-[.14em] uppercase transition-opacity duration-[400ms] ${
@@ -288,7 +333,7 @@ export default function ContactPage() {
                 </span>
               </div>
             </form>
-          </Reveal>
+          </div>
 
           {/* DETAILS */}
           <Reveal as="div" className="flex flex-col gap-[clamp(36px,5vh,56px)]">
@@ -307,6 +352,20 @@ export default function ContactPage() {
               <div className="mt-[14px] text-[14px] leading-[1.55] opacity-[.6] max-w-[34ch]">
                 For new work, press and speaking. I read everything myself.
               </div>
+              {(site.booking.href || site.cv.href) && (
+                <div className="mt-[22px] flex flex-wrap items-center gap-x-7 gap-y-3">
+                  {site.booking.href && (
+                    <TextButton href={site.booking.href} cursor="enter" magnetic arrow="↗">
+                      {site.booking.label}
+                    </TextButton>
+                  )}
+                  {site.cv.href && (
+                    <TextButton href={site.cv.href} cursor="read" magnetic arrow="↗">
+                      {site.cv.label}
+                    </TextButton>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Elsewhere */}
@@ -318,10 +377,15 @@ export default function ContactPage() {
                     <a
                       href={s.href}
                       data-cursor="link"
-                      className="flex justify-between gap-5 no-underline text-inherit border-b border-ink/12 py-[15px] text-[15px]"
+                      className="group flex justify-between gap-5 no-underline text-inherit border-b border-ink/12 py-[15px] text-[15px] transition-colors duration-300 hover:border-ink/40"
                     >
-                      <span>{s.name}</span>
-                      <span className="opacity-[.45] font-mono text-xs">{s.handle}</span>
+                      <span className="inline-flex items-center gap-2 transition-transform duration-[450ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-x-1.5">
+                        <span aria-hidden className="h-px w-0 bg-ink/50 transition-[width] duration-[450ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:w-4" />
+                        {s.name}
+                      </span>
+                      <span className="font-mono text-xs opacity-[.45] transition-opacity duration-300 group-hover:opacity-80">
+                        {s.handle}
+                      </span>
                     </a>
                   </li>
                 ))}
@@ -343,11 +407,16 @@ export default function ContactPage() {
               <div>
                 <div className="block font-mono text-[11px] uppercase tracking-[.3em] opacity-[.5] mb-[14px]">Availability</div>
                 <div className="flex items-center gap-[10px] text-[15px] opacity-[.72]">
-                  <span className="w-2 h-2 rounded-full bg-ink inline-block" />
-                  Booking Q3 2026
+                  {site.availability.open && (
+                    <span className="relative inline-flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-ink opacity-60 animate-ping" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-ink" />
+                    </span>
+                  )}
+                  {site.availability.short}
                 </div>
                 <div className="mt-[10px] text-[14px] leading-[1.55] opacity-[.55] max-w-[24ch]">
-                  2—3 projects at a time.
+                  {site.availability.note}
                 </div>
               </div>
             </div>
@@ -359,7 +428,7 @@ export default function ContactPage() {
       <footer
         id="contact"
         data-darkzone=""
-        className="relative z-[1] text-ink min-h-[88vh] flex flex-col justify-end px-gutter pt-[clamp(90px,18vh,200px)] pb-10"
+        className="relative z-[1] text-ink min-h-[100dvh] flex flex-col justify-end px-gutter pt-[clamp(90px,18vh,200px)] pb-10"
       >
         <Reveal className="border-t border-bone/18 pt-[clamp(40px,7vh,80px)] flex justify-between items-end flex-wrap gap-[30px]">
           <div className="font-serif text-[clamp(34px,5vw,80px)] italic leading-[1.02] tracking-[-.02em]">

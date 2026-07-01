@@ -56,6 +56,14 @@
   input::placeholder, textarea::placeholder { color: --alpha(var(--color-ink) / 32%); }
 }
 
+/* ---------- authored ease vocabulary (CSS) ----------
+   Named distinctly so they don't override Tailwind's own ease-* utilities.
+   Mirror of src/lib/ease.ts for use in transition strings. */
+:root {
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);   /* expo-out */
+  --ease-transition: cubic-bezier(0.87, 0, 0.13, 1); /* expo-inout */
+}
+
 /* ---------- motion keyframes ---------- */
 @keyframes ob-grain {
   0%   { transform: translate(0, 0); }
@@ -73,6 +81,12 @@
 @keyframes ob-bob {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(8px); }
+}
+/* living media wells — a soft gradient blob drifts so the placeholder feels alive */
+@keyframes media-drift {
+  0%   { transform: translate(-7%, -5%) scale(1.12); }
+  50%  { transform: translate(7%, 6%) scale(1.28); }
+  100% { transform: translate(-7%, -5%) scale(1.12); }
 }
 @keyframes ob-mask-up {
   from { transform: translateY(116%); }
@@ -116,7 +130,7 @@
 }
 @media (hover: none) {
   [data-root] { cursor: auto !important; }
-  [data-cursor-ring], [data-cursor-dot], [data-cursor-label] { display: none !important; }
+  [data-cursor-ring], [data-cursor-dot], [data-cursor-label], [data-cursor-trail] { display: none !important; }
 }
 
 /* utility echoes of the design system */

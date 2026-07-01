@@ -24,7 +24,9 @@ export default function SiteFooter({
     <footer
       id={id}
       data-darkzone=""
-      className="relative z-[1] px-gutter pt-[clamp(60px,10vh,120px)] pb-10 text-ink"
+      // full-viewport dark panel: fills the screen so no preceding content creeps in at the
+      // top when scrolled to the bottom; content anchored to the base, plasma breathes above.
+      className="relative z-[1] flex min-h-[100dvh] flex-col justify-end px-gutter pt-[clamp(90px,18vh,200px)] pb-10 text-ink"
     >
       <Reveal className={topBorder ? "border-t border-bone/18 pt-[clamp(40px,7vh,80px)]" : ""}>
         <h2 className="font-serif text-[clamp(48px,11vw,200px)] font-normal italic leading-[0.92] tracking-[-.03em]">
@@ -51,7 +53,12 @@ export default function SiteFooter({
           {showSocials && !secondary && (
             <div className="flex gap-7 text-xs uppercase tracking-[.16em]">
               {site.socials.map((s) => (
-                <a key={s.name} href={s.href} data-cursor="link" className="text-inherit no-underline opacity-60">
+                <a
+                  key={s.name}
+                  href={s.href}
+                  data-cursor="link"
+                  className="inline-block text-inherit no-underline opacity-60 transition-[opacity,transform] duration-300 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-0.5 hover:opacity-100"
+                >
                   {s.name}
                 </a>
               ))}

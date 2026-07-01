@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
+
+// useLayoutEffect on the client (apply the hidden start state before paint), useEffect on
+// the server to avoid React's SSR warning.
+const useIsoLayoutEffect = typeof document !== "undefined" ? useLayoutEffect : useEffect;
 import { useExperience } from "@/experience/ExperienceProvider";
 import Kicker from "@/components/ui/Kicker";
 import SiteFooter from "@/components/SiteFooter";
@@ -25,26 +29,34 @@ export default function WorkIndexPage() {
   const arrowRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   // ---------- intro entrance ----------
-  useEffect(() => {
+  useIsoLayoutEffect(() => {
+    const heads = [kickerRef.current, titleRef.current, subRef.current];
     const rows = rowRefs.current.filter(Boolean) as HTMLAnchorElement[];
-    if (reduced) {
-      [kickerRef.current, titleRef.current, subRef.current].forEach((el) => {
-        if (el) el.style.transform = "none";
-      });
+    const reveal = () => {
+      gsap.killTweensOf([...heads, ...rows]);
+      gsap.set(heads, { clearProps: "transform" });
       rows.forEach((r) => (r.style.opacity = "1"));
+    };
+    if (reduced) {
+      reveal();
       return;
     }
+    // GSAP owns the hidden start state on its own yPercent channel via gsap.set. The start
+    // must NOT come from a CSS `transform` — GSAP parses an existing translateY(%) into its
+    // pixel `y` channel and then animates `yPercent` on a separate channel, so the two add
+    // and the header never reaches rest (it sits hidden, then a timer snaps it). Runs in a
+    // layout effect so the hidden state lands before paint (no flash).
+    gsap.set(kickerRef.current, { yPercent: 120 });
+    gsap.set(titleRef.current, { yPercent: 116 });
+    gsap.set(subRef.current, { yPercent: 120 });
+    gsap.set(rows, { opacity: 0 });
+
     const tl = gsap.timeline();
     tl.to(kickerRef.current, { yPercent: 0, duration: 1.1, ease: "power4.out", delay: 0.15 }, 0);
     tl.to(titleRef.current, { yPercent: 0, duration: 1.2, ease: "power4.out", delay: 0.28 }, 0);
     tl.to(subRef.current, { yPercent: 0, duration: 1.1, ease: "power4.out", delay: 0.5 }, 0);
     tl.to(rows, { opacity: 1, duration: 0.9, ease: "power2.out", stagger: 0.09, delay: 0.6 }, 0);
-    const safety = window.setTimeout(() => {
-      [kickerRef.current, titleRef.current, subRef.current].forEach((el) => {
-        if (el) el.style.transform = "none";
-      });
-      rows.forEach((r) => (r.style.opacity = "1"));
-    }, 2300);
+    const safety = window.setTimeout(reveal, 3200);
     return () => {
       tl.kill();
       clearTimeout(safety);
@@ -95,20 +107,20 @@ export default function WorkIndexPage() {
       {/* HEADER */}
       <header className="relative z-[1] px-gutter pt-[clamp(120px,18vh,200px)] pb-[clamp(30px,6vh,60px)]">
         <div className="mb-[22px] overflow-hidden">
-          <div ref={kickerRef} style={{ transform: reduced ? "none" : "translateY(120%)" }}>
+          <div ref={kickerRef}>
             <Kicker>Index — every project, 2024—26</Kicker>
           </div>
         </div>
         <div className="overflow-hidden pb-[.18em]">
           <h1 className="font-serif text-[clamp(58px,13vw,200px)] font-normal leading-[0.92] tracking-[-.03em]">
-            <span ref={titleRef} className="block" style={{ transform: reduced ? "none" : "translateY(116%)" }}>
+            <span ref={titleRef} className="block">
               Selected <span className="italic">work</span>
             </span>
           </h1>
         </div>
         <div className="mt-[clamp(24px,4vh,42px)] flex flex-wrap items-end justify-between gap-5">
           <div className="overflow-hidden">
-            <div ref={subRef} className="max-w-[44ch]" style={{ transform: reduced ? "none" : "translateY(120%)" }}>
+            <div ref={subRef} className="max-w-[44ch]">
               <p className="text-body opacity-[.7]">
                 Five worlds, rendered live in the browser. Hover any line to glimpse it — open one to step inside.
               </p>

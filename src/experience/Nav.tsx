@@ -9,6 +9,7 @@ export default function Nav() {
   const { toggleMenu, menuContent, navigate, registerTick, glReady } = useExperience();
   const logoRef = useRef<HTMLAnchorElement | null>(null);
   const logoUlRef = useRef<HTMLSpanElement | null>(null);
+  const ctaRef = useRef<HTMLAnchorElement | null>(null);
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const topRef = useRef<HTMLElement | null>(null);
   const botRef = useRef<HTMLElement | null>(null);
@@ -35,6 +36,7 @@ export default function Nav() {
     if (navRef.current) navRef.current.style.mixBlendMode = "normal";
     if (logoRef.current) logoRef.current.style.color = "#0a0a0a";
     if (btnRef.current) btnRef.current.style.color = "#0a0a0a";
+    if (ctaRef.current) ctaRef.current.style.color = "#0a0a0a";
     let bcP = -1;
     let lcP = -1;
     const tick = (s: TickState) => {
@@ -43,7 +45,9 @@ export default function Nav() {
       const lc = Math.max(s.dark, clamp((mr - 0.62) / 0.22, 0, 1));
       if (Math.abs(bc - bcP) > 0.004) {
         bcP = bc;
-        if (btnRef.current) btnRef.current.style.color = mixHex("#0a0a0a", "#e8e6e1", bc);
+        const col = mixHex("#0a0a0a", "#e8e6e1", bc);
+        if (btnRef.current) btnRef.current.style.color = col;
+        if (ctaRef.current) ctaRef.current.style.color = col;
       }
       if (Math.abs(lc - lcP) > 0.004) {
         lcP = lc;
@@ -94,7 +98,28 @@ export default function Nav() {
         />
       </a>
 
-      <button
+      <div className="flex items-center gap-[clamp(14px,2vw,28px)]">
+        {/* persistent primary CTA — leading dot doubles as the live availability signal */}
+        <a
+          ref={ctaRef}
+          href={site.cta.href}
+          data-cursor="enter"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(site.cta.href);
+          }}
+          className="hidden sm:inline-flex items-center gap-2.5 rounded-full border border-current/30 px-[18px] py-[9px] font-mono text-[11px] uppercase tracking-[.2em] no-underline cursor-none [transition:background-color_.4s_ease] hover:bg-[color-mix(in_srgb,currentColor_10%,transparent)]"
+        >
+          {site.availability.open && (
+            <span className="relative inline-flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-60 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-current" />
+            </span>
+          )}
+          {site.cta.label}
+        </a>
+
+        <button
         ref={btnRef}
         data-cursor="menu"
         onClick={toggleMenu}
@@ -123,6 +148,7 @@ export default function Nav() {
           />
         </span>
       </button>
+      </div>
     </nav>
   );
 }

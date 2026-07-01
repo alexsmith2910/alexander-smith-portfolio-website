@@ -2,7 +2,8 @@
 
 import { useId, useRef, type CSSProperties, type ReactNode } from "react";
 import { gsap } from "gsap";
-import { useExperience } from "@/experience/ExperienceProvider";
+import { useExperience, useTick } from "@/experience/ExperienceProvider";
+import { clamp } from "@/lib/math";
 
 /** Striped media well on bone/obsidian with a mono caption naming the asset to
  *  drop in. 3D tilt + a one-shot liquid (SVG displacement) ripple on hover that
@@ -16,6 +17,7 @@ export default function MediaPlaceholder({
   dark = false,
   height = "clamp(320px,58vh,620px)",
   glow,
+  living = false,
   children,
   style,
   cursor = "view",
@@ -28,6 +30,8 @@ export default function MediaPlaceholder({
   height?: string;
   /** optional radial accent overlay (e.g. signal colour) */
   glow?: string;
+  /** animated, cursor-reactive gradient surface (vs the flat stripe) */
+  living?: boolean;
   children?: ReactNode;
   style?: CSSProperties;
   cursor?: string;
@@ -43,6 +47,22 @@ export default function MediaPlaceholder({
   const oRef = useRef({ v: 0 });
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const wobbleRaf = useRef(0);
+
+  // depth: parallax the inner image by scroll position + skew it with scroll velocity
+  const reducedRef = useRef(reduced);
+  reducedRef.current = reduced;
+  useTick((s) => {
+    const img = imgRef.current;
+    const wrap = wrapRef.current;
+    if (!img || !wrap || reducedRef.current) return;
+    const b = wrap.getBoundingClientRect();
+    if (b.bottom < -80 || b.top > window.innerHeight + 80) return; // offscreen
+    const amp = b.height * 0.06; // stays within the -8% inset → no edge gap
+    const center = (b.top + b.height / 2 - window.innerHeight / 2) / window.innerHeight;
+    const par = clamp(-center * amp, -amp, amp);
+    const sk = clamp(s.velocity * 0.16, -4, 4);
+    img.style.transform = `translate3d(0, ${par.toFixed(1)}px, 0) skewY(${sk.toFixed(2)}deg)`;
+  }, []);
 
   const setDisp = () => dispRef.current?.setAttribute("scale", oRef.current.v.toFixed(2));
   const startWobble = () => {
@@ -73,6 +93,11 @@ export default function MediaPlaceholder({
     const rx = ((e.clientY - b.top) / b.height - 0.5) * -7;
     const ry = ((e.clientX - b.left) / b.width - 0.5) * 7;
     wrapRef.current.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
+    // cursor-reactive light for the living surface (hover-scrub)
+    if (living) {
+      wrapRef.current.style.setProperty("--mx", `${(((e.clientX - b.left) / b.width) * 100).toFixed(1)}%`);
+      wrapRef.current.style.setProperty("--my", `${(((e.clientY - b.top) / b.height) * 100).toFixed(1)}%`);
+    }
   };
   const onEnter = () => {
     if (reduced || !imgRef.current) return;
@@ -118,8 +143,53 @@ export default function MediaPlaceholder({
       </svg>
 
       {/* inner image layer (oversized so the ripple never exposes a gap at the edge) */}
-      <div ref={imgRef} className="absolute inset-[-8%] will-change-[filter]">
-        <div className="absolute inset-0" style={{ background: stripe }} />
+      <div ref={imgRef} className="absolute inset-[-8%] will-change-[filter,transform]">
+        {living ? (
+          <>
+            {/* calm base gradient */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: dark
+                  ? "linear-gradient(135deg,#11151d,#0a0d13)"
+                  : "linear-gradient(135deg,#efece6,#d6d2c9)",
+              }}
+            />
+            {/* drifting soft blob — the "alive" motion */}
+            <div
+              className="absolute inset-[-25%]"
+              style={{
+                background: dark
+                  ? "radial-gradient(closest-side, rgba(125,134,148,.45), transparent)"
+                  : "radial-gradient(closest-side, rgba(255,255,255,.9), transparent)",
+                animation: reduced ? "none" : "media-drift 22s ease-in-out infinite",
+              }}
+            />
+            {/* second, slower blob with a whisper of the cold-violet accent */}
+            <div
+              className="absolute inset-[-25%]"
+              style={{
+                background: dark
+                  ? "radial-gradient(closest-side, rgba(135,121,236,.26), transparent)"
+                  : "radial-gradient(closest-side, rgba(26,23,48,.10), transparent)",
+                animation: reduced ? "none" : "media-drift 31s ease-in-out infinite reverse",
+              }}
+            />
+            {/* cursor light (hover-scrub) */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: `radial-gradient(42% 52% at var(--mx,50%) var(--my,50%), ${
+                  dark ? "rgba(199,208,217,.20)" : "rgba(255,255,255,.55)"
+                }, transparent 72%)`,
+              }}
+            />
+            {/* faint stripe — keeps a hint of "media" texture */}
+            <div className="absolute inset-0 opacity-[.08]" style={{ background: stripe }} />
+          </>
+        ) : (
+          <div className="absolute inset-0" style={{ background: stripe }} />
+        )}
         {glow && <div className="pointer-events-none absolute inset-0" style={{ background: glow }} />}
       </div>
 
@@ -148,7 +218,7 @@ export default function MediaPlaceholder({
       )}
       {tag && (
         <span
-          className={`absolute right-4 top-3.5 font-mono text-[10px] uppercase tracking-[.18em] ${
+          className={`absolute right-4 bottom-3 font-mono text-[10px] uppercase tracking-[.18em] ${
             dark ? "text-mist" : "text-muted"
           }`}
         >

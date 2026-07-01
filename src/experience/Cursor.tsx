@@ -18,74 +18,89 @@ const LABELS: Record<string, string> = {
   contact: "Say hi",
 };
 
+// keys that morph the cursor into a large filled disc with the label centred
+// inside it (the media / "view" affordance), vs a small ring + side label.
+const DISC = new Set(["view", "open", "jump"]);
+
 export default function Cursor() {
   const ringRef = useRef<HTMLDivElement | null>(null);
   const dotRef = useRef<HTMLDivElement | null>(null);
   const labelRef = useRef<HTMLDivElement | null>(null);
-  const { reduced, menuOpen } = useExperience();
-
-  // `difference` blend reads well on the light pages + dark footer, but washes out
-  // over the mid-tone violet menu plasma. While the menu is up, switch to a solid
-  // light cursor with a dark halo so it stays crisp on the plasma.
-  useEffect(() => {
-    const ring = ringRef.current;
-    const dot = dotRef.current;
-    const label = labelRef.current;
-    if (!ring || !dot || !label) return;
-    const blend = menuOpen ? "normal" : "difference";
-    ring.style.mixBlendMode = blend;
-    dot.style.mixBlendMode = blend;
-    label.style.mixBlendMode = blend;
-    ring.style.borderColor = menuOpen ? "rgba(232,230,225,.95)" : "rgba(232,230,225,.6)";
-    ring.style.boxShadow = menuOpen ? "0 0 7px rgba(6,6,6,.45)" : "none";
-    dot.style.boxShadow = menuOpen ? "0 0 5px 1px rgba(6,6,6,.5)" : "none";
-    label.style.textShadow = menuOpen ? "0 1px 6px rgba(6,6,6,.6)" : "none";
-  }, [menuOpen]);
+  const trailRef = useRef<HTMLDivElement | null>(null);
+  const { reduced } = useExperience();
 
   useEffect(() => {
     if (reduced) return;
     const ring = ringRef.current!;
     const dot = dotRef.current!;
     const label = labelRef.current!;
-    const cur = { x: window.innerWidth / 2, y: window.innerHeight / 2, ex: window.innerWidth / 2, ey: window.innerHeight / 2 };
+    const trail = trailRef.current!;
+    const cur = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      ex: window.innerWidth / 2,
+      ey: window.innerHeight / 2,
+      tx: window.innerWidth / 2,
+      ty: window.innerHeight / 2,
+    };
+    let mode: "idle" | "link" | "disc" = "idle";
 
     const onMove = (e: PointerEvent) => {
       cur.x = e.clientX;
       cur.y = e.clientY;
       dot.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
-      label.style.left = e.clientX + "px";
-      label.style.top = e.clientY + "px";
-      label.style.transform =
-        e.clientX > window.innerWidth - 170
-          ? "translate(calc(-100% - 46px),15px)"
-          : "translate(35px,15px)";
+      if (mode !== "disc") {
+        // side label follows the pointer (flips left near the right edge)
+        label.style.left = e.clientX + "px";
+        label.style.top = e.clientY + "px";
+        label.style.transform =
+          e.clientX > window.innerWidth - 170 ? "translate(calc(-100% - 46px),15px)" : "translate(35px,15px)";
+      }
     };
     window.addEventListener("pointermove", onMove, { passive: true });
 
-    // delegated hover for grow + contextual label
     const interactiveSel = "[data-cursor], a, button, input, textarea, [role='button']";
+    const setIdle = () => {
+      mode = "idle";
+      ring.style.width = "38px";
+      ring.style.height = "38px";
+      ring.style.background = "transparent";
+      ring.style.borderColor = "rgba(232,230,225,.6)";
+      dot.style.opacity = "1";
+      label.style.opacity = "0";
+    };
     const onOver = (e: Event) => {
       const el = (e.target as HTMLElement)?.closest?.(interactiveSel) as HTMLElement | null;
       if (!el) return;
-      ring.style.width = "66px";
-      ring.style.height = "66px";
-      ring.style.background = "rgba(232,230,225,.10)";
       const k = el.getAttribute("data-cursor");
+      const disc = !!k && DISC.has(k);
+      mode = disc ? "disc" : "link";
+      if (disc) {
+        ring.style.width = "92px";
+        ring.style.height = "92px";
+        ring.style.background = "rgba(232,230,225,.14)";
+        ring.style.borderColor = "transparent";
+        dot.style.opacity = "0";
+      } else {
+        ring.style.width = "60px";
+        ring.style.height = "60px";
+        ring.style.background = "rgba(232,230,225,.08)";
+        ring.style.borderColor = "rgba(232,230,225,.6)";
+        dot.style.opacity = "1";
+      }
       if (k && LABELS[k]) {
         label.textContent = LABELS[k];
         label.style.opacity = "1";
+      } else {
+        label.style.opacity = "0";
       }
     };
     const onOut = (e: Event) => {
       const el = (e.target as HTMLElement)?.closest?.(interactiveSel) as HTMLElement | null;
       if (!el) return;
-      // ignore moves to a child still inside an interactive el
       const related = (e as MouseEvent).relatedTarget as HTMLElement | null;
       if (related?.closest?.(interactiveSel)) return;
-      ring.style.width = "38px";
-      ring.style.height = "38px";
-      ring.style.background = "transparent";
-      label.style.opacity = "0";
+      setIdle();
     };
     document.addEventListener("mouseover", onOver);
     document.addEventListener("mouseout", onOut);
@@ -96,6 +111,17 @@ export default function Cursor() {
       cur.ex += (cur.x - cur.ex) * 0.18;
       cur.ey += (cur.y - cur.ey) * 0.18;
       ring.style.transform = `translate(${cur.ex}px,${cur.ey}px) translate(-50%,-50%)`;
+      // soft inertia trail — a slower-lagging ring behind the cursor (hidden over media)
+      cur.tx += (cur.x - cur.tx) * 0.09;
+      cur.ty += (cur.y - cur.ty) * 0.09;
+      trail.style.transform = `translate(${cur.tx}px,${cur.ty}px) translate(-50%,-50%)`;
+      trail.style.opacity = mode === "disc" ? "0" : "0.35";
+      if (mode === "disc") {
+        // label rides centred inside the disc (follows the lerped ring, not the pointer)
+        label.style.left = cur.ex + "px";
+        label.style.top = cur.ey + "px";
+        label.style.transform = "translate(-50%,-50%)";
+      }
     };
     raf = requestAnimationFrame(loop);
 
@@ -109,6 +135,26 @@ export default function Cursor() {
 
   return (
     <>
+      <div
+        ref={trailRef}
+        data-cursor-trail=""
+        aria-hidden
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 79,
+          pointerEvents: "none",
+          width: 30,
+          height: 30,
+          border: "1px solid rgba(232,230,225,.5)",
+          borderRadius: "50%",
+          transform: "translate(-50%,-50%)",
+          opacity: 0.35,
+          mixBlendMode: "difference",
+          transition: "opacity .3s",
+        }}
+      />
       <div
         ref={ringRef}
         data-cursor-ring=""
@@ -124,7 +170,8 @@ export default function Cursor() {
           border: "1px solid rgba(232,230,225,.6)",
           borderRadius: "50%",
           transform: "translate(-50%,-50%)",
-          transition: "width .35s cubic-bezier(.22,1,.36,1),height .35s cubic-bezier(.22,1,.36,1),background .35s,border-color .35s,opacity .3s",
+          transition:
+            "width .4s cubic-bezier(.22,1,.36,1),height .4s cubic-bezier(.22,1,.36,1),background .4s,border-color .4s,opacity .3s",
           mixBlendMode: "difference",
         }}
       />
@@ -144,6 +191,7 @@ export default function Cursor() {
           borderRadius: "50%",
           transform: "translate(-50%,-50%)",
           mixBlendMode: "difference",
+          transition: "opacity .3s",
         }}
       />
       <div
